@@ -16,6 +16,7 @@ Name it with a rank prefix so assets sort in comic order:
 |---|---|
 | **Rank** | Order within the loop. Lower = earlier. Use gaps (10, 20, 30…) so new panels can be inserted later. |
 | **First Loop** | Which loop this panel first appears in. Loop0 = always shown. |
+| **Require Advance To Complete** | If ticked (default), the player must press the advance button after the last step before moving to the next panel. Untick for cinematic panels that should advance automatically. |
 | **Replay Animation On Revisit** | If ticked, the intro animation replays when this panel is seen again in a later loop. |
 | **Incoming Blend** | How the camera moves to this panel. Default: EaseInOut 1s. Use Cut for instant jumps. |
 
@@ -59,6 +60,9 @@ Each `AnimatedStep` child needs its own Animator and clip:
 4. The step blocks input until that event fires, then the next spacebar press is accepted.
 
 **Optional dialogue text:** Assign a `TMP_Text` component to the **Label** field. Fill in variant text fields to override the default text based on player focus choices.
+
+> **Tip — automatic vs manual panel completion:**
+> By default (`Require Advance To Complete` ticked on the `PanelDataSO`), the advance hint appears after the last step and the player presses spacebar to move on. Untick it for panels whose last step ends cinematically and should flow straight to the next panel with no extra press.
 
 ---
 
