@@ -17,7 +17,8 @@ MonoBehaviour:
   hasPhilosophyVariant: 0
   hasScienceVariant: 0
   rank: 40
-  replayAnimationOnRevisit: 1
+  requireAdvanceToComplete: 1
+  replayAnimationOnRevisit: 0
   incomingBlend:
     Style: 1
     Time: 1

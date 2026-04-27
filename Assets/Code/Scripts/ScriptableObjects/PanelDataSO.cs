@@ -16,6 +16,11 @@ public class PanelDataSO : ScriptableObject
     [SerializeField] private bool hasScienceVariant;
     [SerializeField] private int rank;
 
+    [Header("Completion")]
+    [Tooltip("If ticked, the player must press the advance button after the last step before moving " +
+             "to the next panel. Untick to advance automatically when the last step finishes.")]
+    [SerializeField] private bool requireAdvanceToComplete = true;
+
     [Header("Loop Revisit")]
     [Tooltip("If ticked, the entry animation replays when this panel is revisited in a later loop. " +
              "Untick for panels whose content does not change between loops.")]
@@ -32,6 +37,7 @@ public class PanelDataSO : ScriptableObject
     public bool HasLeadershipVariant => hasLeadershipVariant;
     public bool HasPhilosophyVariant => hasPhilosophyVariant;
     public bool HasScienceVariant => hasScienceVariant;
+    public bool RequireAdvanceToComplete => requireAdvanceToComplete;
     public bool ReplayAnimationOnRevisit => replayAnimationOnRevisit;
     public CinemachineBlendDefinition IncomingBlend => incomingBlend;
 }

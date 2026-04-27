@@ -52,8 +52,12 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         // This guarantees only one CinemachineCamera is ever active at a time.
         cam.enabled = false;
 
-        // Collect all steps from children in hierarchy order.
+        // Collect all steps (DialoguePoints, MiniGames, etc.) from children in hierarchy order.
+        // Immediately deactivate them so their Animators don't tick before Show() is called —
+        // mirrors the cam.enabled = false pattern above.
         _steps = GetComponentsInChildren<IPanelStep>(true);
+        foreach (IPanelStep step in _steps)
+            step.Deactivate();
 
         // Snap to time=0 of Intro so Animator-driven elements start in their hidden state
         // before Show() is called (prevents a visible flash on the first frame).
@@ -185,7 +189,13 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         }
         else if (_currentStep >= _steps.Length)
         {
-            OnPanelComplete.Invoke();
+            // Last step was non-blocking. If the panel requires an explicit advance press,
+            // signal ready-for-input and let the next Advance() call fire OnPanelComplete.
+            // Otherwise complete immediately.
+            if (data.RequireAdvanceToComplete)
+                OnReadyForInput.Invoke();
+            else
+                OnPanelComplete.Invoke();
         }
         else
         {
@@ -199,9 +209,17 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         _isBlocked = false;
 
         if (_currentStep >= _steps.Length)
-            OnPanelComplete.Invoke();
+        {
+            // Last step was blocking. Same choice as above — wait for explicit advance or complete now.
+            if (data.RequireAdvanceToComplete)
+                OnReadyForInput.Invoke();
+            else
+                OnPanelComplete.Invoke();
+        }
         else
+        {
             OnReadyForInput.Invoke();
+        }
     }
 
     /// <summary>
