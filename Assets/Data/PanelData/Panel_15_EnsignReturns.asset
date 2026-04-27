@@ -17,10 +17,11 @@ MonoBehaviour:
   hasPhilosophyVariant: 0
   hasScienceVariant: 0
   rank: 150
+  requireAdvanceToComplete: 1
   replayAnimationOnRevisit: 1
   incomingBlend:
-    Style: 1
-    Time: 1
+    Style: 6
+    Time: 3
     CustomCurve:
       serializedVersion: 2
       m_Curve: []

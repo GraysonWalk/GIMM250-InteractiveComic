@@ -16,6 +16,8 @@ public class ComicManager : MonoBehaviour
 
     private ComicPanel _currentComicPanel;
     private IComicPanel _displayedPanel;
+    private IComicPanel _replayingPanel; // panel currently being replayed (null when not replaying)
+    private bool _isReplaying;
     private LoopCount _currentLoopCount;
     private readonly CommandHistory _commandHistory = new();
 
@@ -64,21 +66,25 @@ public class ComicManager : MonoBehaviour
 
     /// <summary>
     ///     Called by advance button (NavigationController.Advance()).
-    ///     Blocked when the player is browsing history (CanRedo = true) — advance button only
-    ///     drives the story forward from the current story position.
+    ///     During normal play: blocked when browsing history (CanRedo = true).
+    ///     During replay: advances the displayed panel regardless of history position.
     /// </summary>
     public void AdvanceComic()
     {
-        if (_commandHistory.CanRedo) return; // browsing history — advance button disabled
-        _currentComicPanel.Advance();
+        if (_isReplaying)
+            _displayedPanel?.Advance();
+        else if (!_commandHistory.CanRedo)
+            _currentComicPanel.Advance();
+        // else: browsing history and not replaying — advance button does nothing
     }
 
     /// <summary>
     ///     Called by back button (NavigationController.RetreatComic()).
-    ///     Moves backward through history, showing the previous panel in its end state with no animation
+    ///     Cancels any in-progress replay before navigating.
     /// </summary>
     public void RetreatComic()
     {
+        CancelReplay();
         ICommand cmd = _commandHistory.Undo();
         if (cmd is not SwitchCameraCommand switchCmd) return;
         _displayedPanel = switchCmd.PanelAfterUndo;
@@ -88,10 +94,11 @@ public class ComicManager : MonoBehaviour
 
     /// <summary>
     ///     Called by forward button (NavigationController.NextPanel()).
-    ///     Moves forward through history, showing the next panel in its end state with no animation.
+    ///     Cancels any in-progress replay before navigating.
     /// </summary>
     public void RedoPanel()
     {
+        CancelReplay();
         ICommand cmd = _commandHistory.Redo();
         if (cmd is not SwitchCameraCommand switchCmd) return;
         _displayedPanel = switchCmd.PanelAfterExecute;
@@ -105,13 +112,62 @@ public class ComicManager : MonoBehaviour
     }
 
     /// <summary>
-    ///     Called by replay button (NavigationPresenter.ReplayButton).
-    ///     Replays the current panel's intro animation and steps.
+    ///     Called by replay button. Wires a temporary relay so the displayed panel's
+    ///     OnReadyForInput unblocks the advance button (normally only the story-front panel
+    ///     has this relay). Also wires OnPanelComplete to clean up when replay ends.
     /// </summary>
     public void ReplayCurrentPanel()
     {
-        _displayedPanel?.Show();
+        if (_displayedPanel == null) return;
+        _replayingPanel = _displayedPanel;
+        _isReplaying = true;
+
+        // Historical panels aren't wired to OnCurrentPanelReadyForInput — add a temporary relay.
+        // Story-front panel already has this relay via RewireCurrentPanel; skip to avoid double-fire.
+        if (!ReferenceEquals(_replayingPanel, _currentComicPanel))
+            _replayingPanel.OnReadyForInput.AddListener(OnCurrentPanelReadyForInput.Invoke);
+
+        _replayingPanel.OnPanelComplete.AddListener(OnReplayComplete);
+        _replayingPanel.Replay();
         OnReplayAvailabilityChanged.Invoke(false);
+    }
+
+    /// <summary>
+    ///     Called when the replaying panel fires OnPanelComplete.
+    ///     Cleans up replay state. For historical panels, fires OnCurrentPanelReadyForInput
+    ///     to unblock the advance button (the presenter won't show the hint since
+    ///     _advanceStructurallyAvailable is false for non-story-front panels).
+    /// </summary>
+    private void OnReplayComplete()
+    {
+        bool wasHistorical = !ReferenceEquals(_replayingPanel, _currentComicPanel);
+
+        if (wasHistorical)
+            _replayingPanel.OnReadyForInput.RemoveListener(OnCurrentPanelReadyForInput.Invoke);
+
+        _replayingPanel.OnPanelComplete.RemoveListener(OnReplayComplete);
+        _replayingPanel = null;
+        _isReplaying = false;
+
+        OnReplayAvailabilityChanged.Invoke(true); // Replay button available again.
+        if (wasHistorical)
+            OnCurrentPanelReadyForInput.Invoke(); // Unblock advance button without showing hint.
+    }
+
+    /// <summary>
+    ///     Removes temporary replay listeners and clears replay state.
+    ///     Called when history navigation interrupts an in-progress replay.
+    /// </summary>
+    private void CancelReplay()
+    {
+        if (!_isReplaying || _replayingPanel == null) return;
+
+        if (!ReferenceEquals(_replayingPanel, _currentComicPanel))
+            _replayingPanel.OnReadyForInput.RemoveListener(OnCurrentPanelReadyForInput.Invoke);
+
+        _replayingPanel.OnPanelComplete.RemoveListener(OnReplayComplete);
+        _replayingPanel = null;
+        _isReplaying = false;
     }
 
     /// <summary>

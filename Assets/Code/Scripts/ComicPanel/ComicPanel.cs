@@ -59,10 +59,17 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         foreach (IPanelStep step in _steps)
             step.Deactivate();
 
-        // Snap to time=0 of Intro so Animator-driven elements start in their hidden state
-        // before Show() is called (prevents a visible flash on the first frame).
+        // Deactivate all steps so any accidentally-active child objects are hidden at scene load.
+        foreach (IPanelStep step in _steps)
+            step.Deactivate();
+
+        // Snap to time=0 of Intro so Animator-driven elements start in their hidden state,
+        // then disable the Animator so it doesn't keep advancing while this panel is inactive.
+        // Without this, the Intro animation plays to completion in the background, leaving
+        // elements fully visible from other panels' cameras before this panel is ever shown.
         anim.Play(IntroHash, 0, 0f);
         anim.Update(0f);
+        anim.enabled = false;
     }
 
     private void OnValidate()
@@ -110,6 +117,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
 
         _currentStep = 0;
         _isBlocked = false;
+        anim.enabled = true;
         cam.enabled = true;
 
         foreach (IPanelStep step in _steps)
@@ -119,18 +127,13 @@ public class ComicPanel : MonoBehaviour, IComicPanel
 
         if (!HasBeenVisited || data.ReplayAnimationOnRevisit)
         {
-            // First visit or replay — play Intro from the start and wait for it to finish.
-            // Using anim.Play instead of CrossFade avoids a same-state crossfade that would
-            // re-trigger any Animation Events at normalizedTime=0 immediately.
             HasBeenVisited = true;
             anim.Play(IntroHash, 0, 0f);
+            anim.CrossFade(IntroHash, data.IntroCrossFadeDuration);
             _introCoroutine = StartCoroutine(WaitForIntroCompletion());
         }
-        else
+        else if (!data.ReplayAnimationOnRevisit)
         {
-            // Revisit with replay disabled — jump straight to the end state.
-            // Defer OnReadyForInput by one frame so SwitchToPanel finishes broadcasting
-            // navigation availability before the hint is shown.
             anim.Play(IntroHash, 0, 1f);
             _introCoroutine = StartCoroutine(FireReadyForInputNextFrame());
         }
@@ -146,6 +149,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         if (_introCoroutine != null) StopCoroutine(_introCoroutine);
         _introCoroutine = null;
 
+        anim.enabled = true;
         cam.enabled = true;
         foreach (IPanelStep step in _steps)
             if (step.PersistsInFinalState)
@@ -162,6 +166,24 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         if (_introCoroutine != null) StopCoroutine(_introCoroutine);
         _introCoroutine = null;
         cam.enabled = false;
+        anim.enabled = false;
+    }
+
+    /// <summary>
+    ///     Replays this panel from the start, resetting any step that has replayOnRevisit = true
+    ///     so it animates and blocks again. Steps with replayOnRevisit = false (e.g. FocusPoint)
+    ///     are left in their completed state — they will skip without blocking on the next pass.
+    ///     Called by ComicManager.ReplayCurrentPanel() when the player presses the Replay button.
+    /// </summary>
+    public void Replay()
+    {
+        if (_steps != null)
+            foreach (IPanelStep step in _steps)
+                step.PrepareForReplay();
+
+        // Reset HasBeenVisited so Show() takes the first-visit path and replays the intro.
+        HasBeenVisited = false;
+        Show();
     }
 
     /// <summary>

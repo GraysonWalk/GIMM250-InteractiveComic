@@ -22,8 +22,14 @@ public abstract class MiniGame : MonoBehaviour, IPanelStep, IMiniGame
     public UnityEvent OnGameFailed { get; } = new();
     public UnityEvent OnStepComplete { get; } = new();
 
-    // Minigames always block — the panel waits for the game to finish before accepting input.
-    public bool IsBlocking => true;
+    [Tooltip("If ticked, this minigame runs again when the panel is replayed. " +
+             "Leave unticked (default) so completed minigames are skipped on revisit.")]
+    [SerializeField] private bool replayOnRevisit;
+
+    private bool _hasBeenActivated;
+
+    // Blocks input until EndGame() fires — unless already completed and replayOnRevisit is false.
+    public bool IsBlocking => !_hasBeenActivated || replayOnRevisit;
 
     // Minigames never persist in the final state — they are interactive, not display elements.
     public bool PersistsInFinalState => false;
@@ -35,6 +41,9 @@ public abstract class MiniGame : MonoBehaviour, IPanelStep, IMiniGame
     /// <summary>Called by ComicPanel when this step's turn is reached. Shows the minigame and starts it.</summary>
     public void Activate(PlayerChoicesSO choices)
     {
+        bool skip = _hasBeenActivated && !replayOnRevisit;
+        _hasBeenActivated = true;
+        if (skip) return; // Already completed and not set to replay — panel moves on without blocking.
         gameObject.SetActive(true);
         StartGame();
     }
@@ -43,6 +52,13 @@ public abstract class MiniGame : MonoBehaviour, IPanelStep, IMiniGame
     public void Deactivate()
     {
         gameObject.SetActive(false);
+    }
+
+    /// <summary>Resets visited state if this minigame should replay on the next panel replay.</summary>
+    public void PrepareForReplay()
+    {
+        if (replayOnRevisit)
+            _hasBeenActivated = false;
     }
 
     /// <summary>Override to set up game state, spawn objects, start timers, etc.</summary>

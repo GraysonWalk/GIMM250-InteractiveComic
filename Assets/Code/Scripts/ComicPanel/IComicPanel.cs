@@ -17,11 +17,8 @@ public interface IComicPanel
     bool HasBeenVisited { get; } // True after the first Show() call; used to decide whether to offer replay
 
     void Show(); // Show with entry animation — used by forward Advance
-    void ShowInstant(); // Show persistent dialogue points only, no animation — used by history (UI arrows)
-
-    void
-        Hide(); // Hide with exit animation — used by forward Advance when the next panel's intro overlaps the current panel's outro
-
-    void
-        Advance(); // Advance to the next step within the panel, or fire OnPanelComplete if there are no more steps. Plays animations and blocks input until each step's OnAnimationFinished event.
+    void ShowInstant(); // Show persistent steps only, no animation — used by history (UI arrows)
+    void Replay(); // Replay all replayable steps from the start — used by the Replay button
+    void Hide();
+    void Advance();
 }

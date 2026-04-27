@@ -32,6 +32,10 @@ public class PanelDataSO : ScriptableObject
     [SerializeField] private CinemachineBlendDefinition incomingBlend =
         new(CinemachineBlendDefinition.Styles.EaseInOut, 1f);
 
+    [Tooltip("Duration in seconds for the intro animation cross-fade when this panel is shown. " +
+             "Shorter values snap to the intro faster; longer values give a softer start.")]
+    [SerializeField] private float introCrossFadeDuration = 0.1f;
+
     public int Rank => rank;
     public LoopCount FirstLoop => firstLoop;
     public bool HasLeadershipVariant => hasLeadershipVariant;
@@ -40,4 +44,5 @@ public class PanelDataSO : ScriptableObject
     public bool RequireAdvanceToComplete => requireAdvanceToComplete;
     public bool ReplayAnimationOnRevisit => replayAnimationOnRevisit;
     public CinemachineBlendDefinition IncomingBlend => incomingBlend;
+    public float IntroCrossFadeDuration => introCrossFadeDuration;
 }

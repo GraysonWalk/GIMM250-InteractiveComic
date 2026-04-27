@@ -20,6 +20,8 @@ public class NavigationController : MonoBehaviour, INavigationController
     private bool _inputBlocked;
 
     private InputAction _advanceAction;
+    private InputAction _navigateBackAction;
+    private InputAction _navigateForwardAction;
 
     #endregion
 
@@ -27,19 +29,25 @@ public class NavigationController : MonoBehaviour, INavigationController
 
     private void Awake()
     {
-        _advanceAction = InputSystem.actions.FindAction("Advance");
+        _advanceAction         = InputSystem.actions.FindAction("Advance");
+        _navigateBackAction    = InputSystem.actions.FindAction("NavigateBack");
+        _navigateForwardAction = InputSystem.actions.FindAction("NavigateForward");
     }
 
     private void OnEnable()
     {
-        _advanceAction.performed += OnAdvance;
+        _advanceAction.performed         += OnAdvance;
+        _navigateBackAction.performed    += OnNavigateBack;
+        _navigateForwardAction.performed += OnNavigateForward;
         CinemachineCore.CameraActivatedEvent.AddListener(OnCameraActivated);
         comicManager.OnCurrentPanelReadyForInput.AddListener(OnPanelReadyForInput);
     }
 
     private void OnDisable()
     {
-        _advanceAction.performed -= OnAdvance;
+        _advanceAction.performed         -= OnAdvance;
+        _navigateBackAction.performed    -= OnNavigateBack;
+        _navigateForwardAction.performed -= OnNavigateForward;
         CinemachineCore.CameraActivatedEvent.RemoveListener(OnCameraActivated);
         comicManager.OnCurrentPanelReadyForInput.RemoveListener(OnPanelReadyForInput);
     }
@@ -78,15 +86,10 @@ public class NavigationController : MonoBehaviour, INavigationController
     ///     Called whenever the current panel is ready for the next Advance Input button press:
     ///     intro animation finished, non-blocking step activated, or blocking step completed.
     /// </summary>
-    private void OnPanelReadyForInput()
-    {
-        _inputBlocked = false;
-    }
-
-    private void OnAdvance(InputAction.CallbackContext ctx)
-    {
-        Advance();
-    }
+    private void OnPanelReadyForInput() => _inputBlocked = false;
+    private void OnAdvance(InputAction.CallbackContext ctx) => Advance();
+    private void OnNavigateBack(InputAction.CallbackContext ctx) => PreviousPanel();
+    private void OnNavigateForward(InputAction.CallbackContext ctx) => NextPanel();
 
     // Unblock input once the Cinemachine blend is done and the new camera is fully active
     private void OnCameraActivated(ICinemachineCamera.ActivationEventParams args)

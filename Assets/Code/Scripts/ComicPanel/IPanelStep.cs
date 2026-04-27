@@ -24,4 +24,12 @@ public interface IPanelStep
 
     /// <summary>Hide or reset this step (called on Show() reset and for non-persistent steps in ShowInstant()).</summary>
     void Deactivate();
+
+    /// <summary>
+    ///     Called by ComicPanel.Replay() before the panel restarts.
+    ///     Steps that should replay (replayOnRevisit = true) reset their visited state here
+    ///     so they block input and animate again. Steps that should not replay (e.g. FocusPoint)
+    ///     leave their state untouched so they remain non-blocking on the next pass.
+    /// </summary>
+    void PrepareForReplay();
 }
