@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7032d6e9d6cb4589881e7a539d167d77, type: 3}
+  m_Name: Panel_26_ThoseLostA
+  m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
+  firstLoop: 0
+  hasLeadershipVariant: 0
+  hasPhilosophyVariant: 0
+  hasScienceVariant: 0
+  rank: 0
+  requireAdvanceToComplete: 1
+  replayAnimationOnRevisit: 1
+  incomingBlend:
+    Style: 1
+    Time: 1
+    CustomCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  introCrossFadeDuration: 0.1
