@@ -127,7 +127,6 @@ public class ComicPanel : MonoBehaviour, IComicPanel
 
         if (!HasBeenVisited || data.ReplayAnimationOnRevisit)
         {
-            HasBeenVisited = true;
             anim.Play(IntroHash, 0, 0f);
             anim.CrossFade(IntroHash, data.IntroCrossFadeDuration);
             _introCoroutine = StartCoroutine(WaitForIntroCompletion());
@@ -265,6 +264,10 @@ public class ComicPanel : MonoBehaviour, IComicPanel
             yield return null;
         }
 
+        // Mark as visited only now — after the animation fully completes.
+        // If the player navigated away mid-animation, this line never runs,
+        // so HasBeenVisited stays false and the animation replays on next visit.
+        HasBeenVisited = true;
         OnReadyForInput.Invoke();
     }
 
