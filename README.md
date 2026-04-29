@@ -15,7 +15,8 @@ Name it with a rank prefix so assets sort in comic order:
 | Field | What it does |
 |---|---|
 | **Rank** | Order within the loop. Lower = earlier. Use gaps (10, 20, 30…) so new panels can be inserted later. |
-| **First Loop** | Which loop this panel first appears in. Loop0 = always shown. |
+| **First Loop** | Which loop this panel first appears in. Loop0 = always shown from the start. |
+| **Last Loop** | Which loop this panel last appears in. Defaults to Loop3 (always shown). Set lower to retire a panel after a specific loop. |
 | **Require Advance To Complete** | If ticked (default), the player must press the advance button after the last step before moving to the next panel. Untick for cinematic panels that should advance automatically. |
 | **Replay Animation On Revisit** | If ticked, the intro animation replays when this panel is seen again in a later loop. |
 | **Incoming Blend** | How the camera moves to this panel. Default: EaseInOut 1s. Use Cut for instant jumps. |
@@ -38,8 +39,9 @@ Steps are activated in **hierarchy top-to-bottom order**. To reorder steps, drag
 On the **ComicPanel** root:
 - **Data** → your new `PanelDataSO` asset
 - **Cam** → the `CinemachineCamera` child
-- **Anim** → the `Animator` on this same GameObject
 - **Choices** → the shared `PlayerChoices.asset` (in `Assets/Data/PlayerChoices/`)
+
+> **Animator** is resolved automatically via `GetComponent` — no manual assignment needed. Unity will also prevent it from being accidentally removed (`[RequireComponent]`).
 
 On the **ComicManager** GameObject: drag your new panel into the **Comic Panels** list.
 
@@ -60,6 +62,8 @@ Each `AnimatedStep` child needs its own Animator and clip:
 4. The step blocks input until that event fires, then the next spacebar press is accepted.
 
 **Optional dialogue text:** Assign a `TMP_Text` component to the **Label** field. Fill in variant text fields to override the default text based on player focus choices.
+
+**Persists In Final State:** Tick this on any `AnimatedStep` that should remain visible when the player browses history (UI arrows). Only steps that have already been triggered via the advance button will show — steps not yet reached are always hidden regardless of this setting.
 
 > **Tip — automatic vs manual panel completion:**
 > By default (`Require Advance To Complete` ticked on the `PanelDataSO`), the advance hint appears after the last step and the player presses spacebar to move on. Untick it for panels whose last step ends cinematically and should flow straight to the next panel with no extra press.
@@ -96,7 +100,7 @@ THIS NEEDS TO CHANGE STILL TO HAVE TWO OPTIONS FOR EACH
 
 ```
 ScriptableObjects          — designer-editable data
-  PanelDataSO              — rank, firstLoop, blend, variant flags per panel
+  PanelDataSO              — rank, firstLoop, lastLoop, blend, variant flags per panel
   PlayerChoicesSO          — shared state for all three focuses
 
 MonoBehaviours            
@@ -104,12 +108,12 @@ MonoBehaviours
   ComicPanel               — Show/Hide/Advance, drives step sequence
   AnimatedStep             — blocking IPanelStep; optional dialogue text
   MiniGame (abstract)      — blocking IPanelStep base; subclass for each puzzle
-  FocusPoint               — blocking IPanelStep; records player choice to PlayerChoicesSO
+  FocusPoint               — stub; not yet implemented (see AGENTS.md)
   NavigationController     — input events → ComicManager
   NavigationPresenter      — UI arrows, replay button, advance hint
 
 Plain C#                  
-  PanelSelector            — picks next panel by rank + loop
+  PanelSelector            — picks next panel by rank + loop eligibility
   CommandHistory           — two-stack undo/redo (Execute/Undo/Redo)
   SwitchCameraCommand      — ICommand; Show/Hide panels, set Cinemachine blend
 ```

@@ -31,8 +31,8 @@ public abstract class MiniGame : MonoBehaviour, IPanelStep, IMiniGame
     // Blocks input until EndGame() fires — unless already completed and replayOnRevisit is false.
     public bool IsBlocking => !_hasBeenActivated || replayOnRevisit;
 
-    // Minigames never persist in the final state — they are interactive, not display elements.
-    public bool PersistsInFinalState => false;
+    // Minigames are interactive — they never persist as display elements in the final state.
+    public bool ShowInFinalState => false;
 
     #endregion
 

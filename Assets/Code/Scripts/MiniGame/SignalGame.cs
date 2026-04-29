@@ -5,8 +5,4 @@
 /// TODO: Implement Signal minigame
 public class SignalGame : MiniGame
 {
-    public override void StartGame()
-    {
-        base.StartGame();
-    }
 }

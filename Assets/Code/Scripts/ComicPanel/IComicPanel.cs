@@ -5,6 +5,7 @@ public interface IComicPanel
 {
     int Rank { get; }
     LoopCount FirstLoop { get; }
+    LoopCount LastLoop { get; }
     CinemachineBlendDefinition IncomingBlend { get; }
     UnityEvent OnPanelComplete { get; }
 

@@ -46,7 +46,10 @@ public sealed class AnimatedStep : MonoBehaviour, IPanelStep
     // Blocks input until OnAnimationFinished fires — unless this step has already run
     // and replayOnRevisit is false, in which case it is skipped without blocking.
     public bool IsBlocking => !_hasBeenActivated || replayOnRevisit;
-    public bool PersistsInFinalState => persistsInFinalState;
+
+    // True only when this step was designed to persist AND has actually been run via Advance().
+    // Prevents ShowInstant() from playing the animation outside of the normal blocking sequence.
+    public bool ShowInFinalState => persistsInFinalState && _hasBeenActivated;
     public UnityEvent OnStepComplete { get; } = new();
 
     #endregion

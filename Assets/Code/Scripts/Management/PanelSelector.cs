@@ -19,7 +19,7 @@ public static class PanelSelector
             return LowestEligible(comicPanels, loopCount);
 
         return comicPanels
-                   .Where(cp => cp.Rank > currentPanel.Rank && cp.FirstLoop <= loopCount)
+                   .Where(cp => cp.Rank > currentPanel.Rank && cp.FirstLoop <= loopCount && cp.LastLoop >= loopCount)
                    .OrderBy(cp => cp.Rank)
                    .FirstOrDefault()
                ?? LowestEligible(comicPanels, loopCount); // null-coalescing wrap-around
@@ -29,7 +29,7 @@ public static class PanelSelector
     private static ComicPanel LowestEligible(List<ComicPanel> comicPanels, LoopCount loopCount)
     {
         return comicPanels
-            .Where(cp => cp.FirstLoop <= loopCount)
+            .Where(cp => cp.FirstLoop <= loopCount && cp.LastLoop >= loopCount)
             .OrderBy(cp => cp.Rank)
             .FirstOrDefault();
     }

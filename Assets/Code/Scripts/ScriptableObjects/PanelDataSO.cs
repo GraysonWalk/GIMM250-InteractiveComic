@@ -10,7 +10,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PanelDataSO", menuName = "Comic/Panel Data", order = 0)]
 public class PanelDataSO : ScriptableObject
 {
+    [Header("Loop Eligibility")]
     [SerializeField] private LoopCount firstLoop;
+    [Tooltip("The last loop this panel appears in. Defaults to Loop3 (always visible). " +
+             "Set lower to retire a panel after a specific loop.")]
+    [SerializeField] private LoopCount lastLoop = LoopCount.Loop3;
     [SerializeField] private bool hasLeadershipVariant;
     [SerializeField] private bool hasPhilosophyVariant;
     [SerializeField] private bool hasScienceVariant;
@@ -38,6 +42,7 @@ public class PanelDataSO : ScriptableObject
 
     public int Rank => rank;
     public LoopCount FirstLoop => firstLoop;
+    public LoopCount LastLoop => lastLoop;
     public bool HasLeadershipVariant => hasLeadershipVariant;
     public bool HasPhilosophyVariant => hasPhilosophyVariant;
     public bool HasScienceVariant => hasScienceVariant;

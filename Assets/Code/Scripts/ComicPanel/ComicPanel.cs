@@ -9,6 +9,7 @@ using UnityEngine.Events;
 ///     All steps are blocking: Advance() waits for each step's OnAnimationFinished event before
 ///     accepting the next input.
 /// </summary>
+[RequireComponent(typeof(Animator))]
 public class ComicPanel : MonoBehaviour, IComicPanel
 {
     #region Variables
@@ -16,7 +17,8 @@ public class ComicPanel : MonoBehaviour, IComicPanel
     [SerializeField] private PanelDataSO data; // References a scriptable object used to configure the panel
     [SerializeField] private PlayerChoicesSO choices;
     [SerializeField] private CinemachineCamera cam;
-    [SerializeField] private Animator anim;
+
+    private Animator _anim = null!; // Assigned in Awake() via GetComponent — guaranteed by [RequireComponent]
 
     private IPanelStep[] _steps;
     private int _currentStep;
@@ -35,6 +37,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
     public UnityEvent OnReadyForInput { get; } = new();
 
     public LoopCount FirstLoop => data.FirstLoop;
+    public LoopCount LastLoop => data.LastLoop;
     public int Rank => data.Rank;
     public CinemachineBlendDefinition IncomingBlend => data.IncomingBlend;
     public bool HasBeenVisited { get; private set; }
@@ -45,6 +48,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
 
     private void Awake()
     {
+        _anim = GetComponent<Animator>();
         if (!ValidateReferences()) return;
 
         // Ensure camera starts disabled regardless of how the scene was saved in the Editor.
@@ -59,17 +63,13 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         foreach (IPanelStep step in _steps)
             step.Deactivate();
 
-        // Deactivate all steps so any accidentally-active child objects are hidden at scene load.
-        foreach (IPanelStep step in _steps)
-            step.Deactivate();
-
         // Snap to time=0 of Intro so Animator-driven elements start in their hidden state,
         // then disable the Animator so it doesn't keep advancing while this panel is inactive.
         // Without this, the Intro animation plays to completion in the background, leaving
         // elements fully visible from other panels' cameras before this panel is ever shown.
-        anim.Play(IntroHash, 0, 0f);
-        anim.Update(0f);
-        anim.enabled = false;
+        _anim.Play(IntroHash, 0, 0f);
+        _anim.Update(0f);
+        _anim.enabled = false;
     }
 
     private void OnValidate()
@@ -93,12 +93,6 @@ public class ComicPanel : MonoBehaviour, IComicPanel
             valid = false;
         }
 
-        if (anim == null)
-        {
-            Debug.LogError($"[ComicPanel] '{gameObject.name}': Animator (anim) is not assigned.", this);
-            valid = false;
-        }
-
         return valid;
     }
 
@@ -108,16 +102,16 @@ public class ComicPanel : MonoBehaviour, IComicPanel
     /// </summary>
     public void Show()
     {
-        if (cam == null || anim == null || _steps == null)
+        if (cam == null || _steps == null)
         {
             Debug.LogError($"[ComicPanel] '{gameObject.name}': Show() called but required references are missing. " +
-                           "Check cam, anim, and data in the Inspector.", this);
+                           "Check cam and data in the Inspector.", this);
             return;
         }
 
         _currentStep = 0;
         _isBlocked = false;
-        anim.enabled = true;
+        _anim.enabled = true;
         cam.enabled = true;
 
         foreach (IPanelStep step in _steps)
@@ -127,13 +121,13 @@ public class ComicPanel : MonoBehaviour, IComicPanel
 
         if (!HasBeenVisited || data.ReplayAnimationOnRevisit)
         {
-            anim.Play(IntroHash, 0, 0f);
-            anim.CrossFade(IntroHash, data.IntroCrossFadeDuration);
+            _anim.Play(IntroHash, 0, 0f);
+            _anim.CrossFade(IntroHash, data.IntroCrossFadeDuration);
             _introCoroutine = StartCoroutine(WaitForIntroCompletion());
         }
-        else if (!data.ReplayAnimationOnRevisit)
+        else
         {
-            anim.Play(IntroHash, 0, 1f);
+            _anim.Play(IntroHash, 0, 1f);
             _introCoroutine = StartCoroutine(FireReadyForInputNextFrame());
         }
     }
@@ -148,15 +142,15 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         if (_introCoroutine != null) StopCoroutine(_introCoroutine);
         _introCoroutine = null;
 
-        anim.enabled = true;
+        _anim.enabled = true;
         cam.enabled = true;
         foreach (IPanelStep step in _steps)
-            if (step.PersistsInFinalState)
+            if (step.ShowInFinalState)
                 step.Activate(choices);
             else
                 step.Deactivate();
 
-        anim.Play(IntroHash, 0, 1f);
+        _anim.Play(IntroHash, 0, 1f);
     }
 
     /// <summary>Disables this panel's camera and stops any running intro coroutine.</summary>
@@ -165,7 +159,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         if (_introCoroutine != null) StopCoroutine(_introCoroutine);
         _introCoroutine = null;
         cam.enabled = false;
-        anim.enabled = false;
+        _anim.enabled = false;
     }
 
     /// <summary>
@@ -212,7 +206,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         {
             // Last step was non-blocking. If the panel requires an explicit advance press,
             // signal ready-for-input and let the next Advance() call fire OnPanelComplete.
-            // Otherwise complete immediately.
+            // Otherwise, complete immediately.
             if (data.RequireAdvanceToComplete)
                 OnReadyForInput.Invoke();
             else
@@ -257,7 +251,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         {
             if (!cam.enabled) yield break; // Panel hidden mid-animation; abort.
 
-            AnimatorStateInfo state = anim.GetCurrentAnimatorStateInfo(0);
+            AnimatorStateInfo state = _anim.GetCurrentAnimatorStateInfo(0);
             if (state.shortNameHash == IntroHash && state.normalizedTime >= 1f)
                 break;
 

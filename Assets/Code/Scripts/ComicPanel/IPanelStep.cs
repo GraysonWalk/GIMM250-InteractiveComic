@@ -13,8 +13,12 @@ public interface IPanelStep
     /// <summary>If true, Advance() is locked after Activate() until OnStepComplete fires.</summary>
     bool IsBlocking { get; }
 
-    /// <summary>If true, this step is shown in the panel's final/history state via ShowInstant().</summary>
-    bool PersistsInFinalState { get; }
+    /// <summary>
+    ///     True when this step should be shown by ShowInstant() (history navigation / final state).
+    ///     Implementations combine designer intent (e.g. persistsInFinalState) with runtime state
+    ///     (e.g. hasBeenActivated) — ShowInstant() asks one question and gets one answer.
+    /// </summary>
+    bool ShowInFinalState { get; }
 
     /// <summary>Fired when a blocking step finishes. Non-blocking steps never need to fire this.</summary>
     UnityEvent OnStepComplete { get; }

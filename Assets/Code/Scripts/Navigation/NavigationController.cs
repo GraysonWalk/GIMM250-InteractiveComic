@@ -1,4 +1,3 @@
-using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,10 +12,10 @@ public class NavigationController : MonoBehaviour, INavigationController
     #region Variables
 
     [SerializeField] private ComicManager comicManager;
-    [SerializeField] private CinemachineBrain brain;
 
-    // True while a camera blend or panel intro animation is in progress.
-    // Only Advance() blocks input — history navigation (UI arrows) is always instant.
+    // True while a panel intro animation or blocking step is in progress.
+    // Set to true on Advance(); unblocked only when the panel fires OnReadyForInput,
+    // ensuring input is never accepted mid-animation.
     private bool _inputBlocked;
 
     private InputAction _advanceAction;
@@ -39,7 +38,6 @@ public class NavigationController : MonoBehaviour, INavigationController
         _advanceAction.performed         += OnAdvance;
         _navigateBackAction.performed    += OnNavigateBack;
         _navigateForwardAction.performed += OnNavigateForward;
-        CinemachineCore.CameraActivatedEvent.AddListener(OnCameraActivated);
         comicManager.OnCurrentPanelReadyForInput.AddListener(OnPanelReadyForInput);
     }
 
@@ -48,14 +46,13 @@ public class NavigationController : MonoBehaviour, INavigationController
         _advanceAction.performed         -= OnAdvance;
         _navigateBackAction.performed    -= OnNavigateBack;
         _navigateForwardAction.performed -= OnNavigateForward;
-        CinemachineCore.CameraActivatedEvent.RemoveListener(OnCameraActivated);
         comicManager.OnCurrentPanelReadyForInput.RemoveListener(OnPanelReadyForInput);
     }
 
     /// <summary>
     ///     Steps forward within the current panel (more dialogue/images), or advances to
     ///     the next panel if the current panel is complete. Plays animations. Blocks further input
-    ///     until the camera blend and panel animation finish.
+    ///     until the panel's intro animation and any blocking steps finish.
     /// </summary>
     public void Advance()
     {
@@ -90,13 +87,6 @@ public class NavigationController : MonoBehaviour, INavigationController
     private void OnAdvance(InputAction.CallbackContext ctx) => Advance();
     private void OnNavigateBack(InputAction.CallbackContext ctx) => PreviousPanel();
     private void OnNavigateForward(InputAction.CallbackContext ctx) => NextPanel();
-
-    // Unblock input once the Cinemachine blend is done and the new camera is fully active
-    private void OnCameraActivated(ICinemachineCamera.ActivationEventParams args)
-    {
-        if (!brain.IsBlending)
-            _inputBlocked = false;
-    }
 
     #endregion
 }
