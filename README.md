@@ -4,6 +4,21 @@ Player focus choices (Science / Philosophy / Leadership) alter art and prose in 
 
 ---
 
+## Documentation References
+
+| Resource | Version | URL |
+|----------|---------|-----|
+| Unity 6 User Manual | 6000.0 | https://docs.unity3d.com/6000.0/Documentation/Manual/ |
+| Unity 6 Scripting API | 6000.0 | https://docs.unity3d.com/6000.0/Documentation/ScriptReference/ |
+| URP Manual | 17.3.0 | https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@17.3/manual/ |
+| URP Scripting API | 17.3.0 | https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@17.3/api/ |
+| Cinemachine Manual | 3.1.6 | https://docs.unity3d.com/Packages/com.unity.cinemachine@3.1/manual/ |
+| Cinemachine Scripting API | 3.1.6 | https://docs.unity3d.com/Packages/com.unity.cinemachine@3.1/api/ |
+| Input System Manual | 1.11.0 | https://docs.unity3d.com/Packages/com.unity.inputsystem@1.11/manual/ |
+| Input System Scripting API | 1.11.0 | https://docs.unity3d.com/Packages/com.unity.inputsystem@1.11/api/ |
+
+---
+
 ## Adding a Panel
 
 ### 1. Create the Data Asset
@@ -27,7 +42,7 @@ Name it with a rank prefix so assets sort in comic order:
 ComicPanel_XX_Name          ← ComicPanel component + Animator live HERE (root)
   ├── CinemachineCamera     ← one per panel; starts disabled automatically
   ├── Step_01_Reveal        ← AnimatedStep (first spacebar press)
-  ├── Step_02_Dialogue      ← AnimatedStep with Label assigned (second press)
+  ├── Step_02_Dialogue      ← AnimatedStep with PanelText child(ren) (second press)
   ├── Step_03_SpriteIn      ← AnimatedStep, purely visual (third press)
   └── Step_04_Puzzle        ← MiniGame subclass (fourth press — blocking until complete)
 ```
@@ -61,7 +76,7 @@ Each `AnimatedStep` child needs its own Animator and clip:
 3. On the **last keyframe**, add an **Animation Event** → Function: `OnAnimationFinished`
 4. The step blocks input until that event fires, then the next spacebar press is accepted.
 
-**Optional dialogue text:** Assign a `TMP_Text` component to the **Label** field. Fill in variant text fields to override the default text based on player focus choices.
+**Optional text (dialogue / prose / captions):** Add one or more child GameObjects to the `AnimatedStep` and attach a `PanelText` component to each. The `AnimatedStep`'s Animator controls when each text element appears and disappears via keyframes. Fill in variant text fields on each `PanelText` to show different content based on player focus choices. Leave no `PanelText` children for purely visual steps.
 
 **Persists In Final State:** Tick this on any `AnimatedStep` that should remain visible when the player browses history (UI arrows). Only steps that have already been triggered via the advance button will show — steps not yet reached are always hidden regardless of this setting.
 
@@ -76,7 +91,8 @@ Each `AnimatedStep` child needs its own Animator and clip:
 
 | Component | Blocks input? | Has text? | Use for |
 |---|---|---|---|
-| `AnimatedStep` | until `OnAnimationFinished` | Optional | Dialogue bubbles, sprite reveals, panel effects |
+| `AnimatedStep` | until `OnAnimationFinished` | Via `PanelText` children | Sprite reveals, panel effects, dialogue, prose |
+| `PanelText` | — (not a step) | Yes — focus-variant | Dialogue lines, captions, prose; child of `AnimatedStep`, shown/hidden by its Animator |
 | `MiniGame` subclass | until `Complete()` or `Fail()` | No | Interactive puzzles embedded in panels |
 
 ---
@@ -85,16 +101,21 @@ Each `AnimatedStep` child needs its own Animator and clip:
 
 Choices are stored in the shared `PlayerChoices.asset` ScriptableObject. All panels read from the same asset, so a choice made in panel 4 is visible in panel 15 with no extra wiring.
 
-On any `AnimatedStep` with a **Label** assigned, fill in the variant text fields to show different dialogue based on what the player chose:
-
-THIS NEEDS TO CHANGE STILL TO HAVE TWO OPTIONS FOR EACH
+To display focus-variant text on a panel, add a `PanelText` component to a child GameObject of the `AnimatedStep`. Use the `AnimatedStep`'s Animator to control when the text appears. Fill in the variant fields on `PanelText`:
 
 | Field | When it shows |
 |---|---|
-| Science Text | Player chose a Science option |
-| Philosophy Text | Player chose a Philosophy option |
-| Leadership Text | Player chose a Leadership option |
-| *(TMP_Text default)* | No override matches, or no choice made yet |
+| **Default Text** | No override matches, or no choice made yet |
+| **Science Option A Text** | Player chose Science OptionA |
+| **Science Option B Text** | Player chose Science OptionB |
+| **Philosophy Option A Text** | Player chose Philosophy OptionA |
+| **Philosophy Option B Text** | Player chose Philosophy OptionB |
+| **Leadership Option A Text** | Player chose Leadership OptionA |
+| **Leadership Option B Text** | Player chose Leadership OptionB |
+
+`OptionA` / `OptionB` are placeholder names in the code — they will be renamed to the real thematic names once decided. Leave any field empty to fall through to `defaultText`.
+
+Multiple `PanelText` children can exist under one `AnimatedStep`, each with independent text and independent show/hide timing in the Animator.
 
 ---
 
@@ -108,7 +129,8 @@ ScriptableObjects          — designer-editable data
 MonoBehaviours            
   ComicManager             — panel registry, loop pointer, history navigation
   ComicPanel               — Show/Hide/Advance, drives step sequence
-  AnimatedStep             — blocking IPanelStep; optional dialogue text
+  AnimatedStep             — blocking IPanelStep; populates PanelText children on activate
+  PanelText                — focus-variant text (dialogue/prose/captions); child of AnimatedStep
   FrameMask                — syncs SpriteMask size to parent 9-sliced SpriteRenderer
   MiniGame (abstract)      — blocking IPanelStep base; subclass for each puzzle
   FocusPoint               — stub; not yet implemented (see AGENTS.md)

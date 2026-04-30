@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -19,25 +18,12 @@ public sealed class AnimatedStep : MonoBehaviour, IPanelStep
 {
     #region Variables
 
-    [Tooltip("Optional — assign a TMP_Text to display dialogue text on this step.")]
-    [SerializeField] private TMP_Text label;
-
     [Tooltip("If ticked, this element remains visible when the panel reaches its final state.")]
     [SerializeField] private bool persistsInFinalState;
 
     [Tooltip("If ticked, this step replays its animation when the panel is replayed. " +
              "Untick for steps that should never repeat (e.g. a choice prompt already answered).")]
     [SerializeField] private bool replayOnRevisit = true;
-
-    [Header("Variant Text Overrides (ignored if Label is unassigned)")]
-    [Tooltip("Overrides the TMP_Text value when the player has chosen Science focus.")]
-    [SerializeField] private string scienceText;
-
-    [Tooltip("Overrides the TMP_Text value when the player has chosen Philosophy focus.")]
-    [SerializeField] private string philosophyText;
-
-    [Tooltip("Overrides the TMP_Text value when the player has chosen Leadership focus.")]
-    [SerializeField] private string leadershipText;
 
     // True after the first Activate() call. Combined with replayOnRevisit to decide
     // whether to block input and animate, or skip instantly on subsequent visits.
@@ -66,25 +52,23 @@ public sealed class AnimatedStep : MonoBehaviour, IPanelStep
     }
 
     /// <summary>
-    ///     Activates this step. On first visit (or replay): applies variant text and plays animation.
-    ///     On revisit when replayOnRevisit is false: shows the element in its last-frame state instantly,
-    ///     without blocking input or replaying the animation.
+    ///     Activates this step. On first visit (or replay): populates any PanelText children
+    ///     with focus-variant text, then plays the animation. On revisit when replayOnRevisit is
+    ///     false: shows the element in its last-frame state instantly, without blocking input or
+    ///     replaying the animation.
     /// </summary>
     public void Activate(PlayerChoicesSO choices)
     {
         bool skip = _hasBeenActivated && !replayOnRevisit;
         _hasBeenActivated = true;
 
-        // Only update text when actually playing — preserves the text from the original visit
+        // Only populate text when actually playing — preserves the text from the original visit
         // when skipping, since a different choice may now be active.
-        if (!skip && label != null && choices != null)
+        if (!skip)
         {
-            if (choices.ScienceFocus != FocusOption.None && !string.IsNullOrEmpty(scienceText))
-                label.text = scienceText;
-            else if (choices.PhilosophyFocus != FocusOption.None && !string.IsNullOrEmpty(philosophyText))
-                label.text = philosophyText;
-            else if (choices.LeadershipFocus != FocusOption.None && !string.IsNullOrEmpty(leadershipText))
-                label.text = leadershipText;
+            PanelText[] texts = GetComponentsInChildren<PanelText>(true);
+            foreach (PanelText text in texts)
+                text.Populate(choices);
         }
 
         // Enabling the GameObject lets the Animator resume from where it was last left.

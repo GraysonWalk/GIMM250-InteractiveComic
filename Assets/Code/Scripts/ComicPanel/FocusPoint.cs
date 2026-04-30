@@ -2,16 +2,17 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-///     Represents a focus point in the comic panel where the player can make a choice. Each focus point has a type, an
-///     option, and an event that triggers when the player selects it.
+///     Represents a focus point in the comic panel where the player can make a choice. Each focus point
+///     presents two named options for one thematic category and writes the result to PlayerChoicesSO.
 /// </summary>
 /// TODO: Turn into IPanelStep
-/// TODO: Add fields for FocusType and PlayerChoicesSO
+/// TODO: Add [SerializeField] fields for PlayerChoicesSO and the choice category
 /// TODO: Add logic to show choice buttons and wait
-/// TODO: Add ability to set focus on PlayerChoicesSO
+/// TODO: Add ability to set focus on PlayerChoicesSO via SetScienceFocus / SetPhilosophyFocus / SetLeadershipFocus
 public class FocusPoint : MonoBehaviour
 {
-    private FocusType _focusType;
-    private UnityEvent _onFocusSelected;
-    private FocusOption _option;
+    private ScienceChoice    _scienceChoice;
+    private PhilosophyChoice _philosophyChoice;
+    private LeadershipChoice _leadershipChoice;
+    private UnityEvent       _onFocusSelected;
 }

@@ -6,17 +6,8 @@ public enum LoopCount
     Loop3 = 3
 }
 
-// TODO: Restructure the FocusType and FocusOption code and wiring to fit options.
-public enum FocusType
-{
-    Science,
-    Philosophy,
-    Leadership
-}
-
-public enum FocusOption
-{
-    None,
-    A,
-    B
-}
+// Rename OptionA / OptionB to the real thematic names once they are decided.
+// Only change these values in this file — all consumers update automatically.
+public enum ScienceChoice    { None, OptionA, OptionB }
+public enum PhilosophyChoice { None, OptionA, OptionB }
+public enum LeadershipChoice { None, OptionA, OptionB }
