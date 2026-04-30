@@ -100,6 +100,16 @@ public sealed class AnimatedStep : MonoBehaviour, IPanelStep
     }
 
     /// <summary>
+    ///     Called by Unity when the component is first added in the Editor.
+    ///     Starts inactive so TMP components on this step don't render in the Scene View
+    ///     before fonts are loaded, preventing spurious "No Font Asset" warnings on scene open.
+    /// </summary>
+    private void Reset()
+    {
+        gameObject.SetActive(false);
+    }
+
+    /// <summary>
     ///     Resets visited state if this step should replay, so it blocks input and
     ///     animates again on the next Activate(). Steps with replayOnRevisit = false
     ///     are left untouched — they will still skip on the next pass.

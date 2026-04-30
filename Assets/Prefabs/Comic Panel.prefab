@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea21de7996be4c74a43af8e831f142c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComicPanel
-  data: {fileID: 0}
+  data: {fileID: 11400000, guid: 37c3b5606b811428abfb5b82322deae5, type: 2}
   choices: {fileID: 11400000, guid: 9f5662d2cf4ac47b09986535f7d5e605, type: 2}
   cam: {fileID: 8934351034356299496}
 --- !u!95 &3680867659152069017
@@ -268,14 +268,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5989727071125700010
-Transform:
+--- !u!224 &5989727071125700010
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7479861851306351017}
-  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.001}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -284,6 +283,11 @@ Transform:
   - {fileID: 5605830850411862029}
   m_Father: {fileID: 8146915638931047242}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 6.09, y: 4.09}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &5642249380388307611
 SpriteRenderer:
   serializedVersion: 2

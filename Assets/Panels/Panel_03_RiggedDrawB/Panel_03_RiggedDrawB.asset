@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7032d6e9d6cb4589881e7a539d167d77, type: 3}
   m_Name: Panel_03_RiggedDrawB
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
-  firstLoop: 0
+  firstLoop: 1
+  lastLoop: 3
   hasLeadershipVariant: 0
   hasPhilosophyVariant: 0
   hasScienceVariant: 0
-  rank: 0
+  rank: 30
   requireAdvanceToComplete: 1
   replayAnimationOnRevisit: 1
   incomingBlend:
