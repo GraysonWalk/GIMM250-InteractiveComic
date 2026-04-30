@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Panel_16_PlanetObservation
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
   firstLoop: 0
+  lastLoop: 3
   hasLeadershipVariant: 0
   hasPhilosophyVariant: 0
   hasScienceVariant: 0
@@ -20,8 +21,8 @@ MonoBehaviour:
   requireAdvanceToComplete: 1
   replayAnimationOnRevisit: 1
   incomingBlend:
-    Style: 4
-    Time: 0.1
+    Style: 1
+    Time: 1
     CustomCurve:
       serializedVersion: 2
       m_Curve: []

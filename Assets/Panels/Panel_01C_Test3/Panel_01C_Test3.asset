@@ -21,7 +21,7 @@ MonoBehaviour:
   requireAdvanceToComplete: 1
   replayAnimationOnRevisit: 0
   incomingBlend:
-    Style: 1
+    Style: 0
     Time: 1
     CustomCurve:
       serializedVersion: 2

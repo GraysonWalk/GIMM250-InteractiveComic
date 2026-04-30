@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Panel_15_EnsignReturns
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
   firstLoop: 0
+  lastLoop: 3
   hasLeadershipVariant: 0
   hasPhilosophyVariant: 0
   hasScienceVariant: 0
@@ -20,11 +21,12 @@ MonoBehaviour:
   requireAdvanceToComplete: 1
   replayAnimationOnRevisit: 1
   incomingBlend:
-    Style: 6
-    Time: 3
+    Style: 1
+    Time: 1
     CustomCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  introCrossFadeDuration: 0.1

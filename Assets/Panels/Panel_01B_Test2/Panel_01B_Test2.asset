@@ -22,11 +22,11 @@ MonoBehaviour:
   replayAnimationOnRevisit: 0
   incomingBlend:
     Style: 1
-    Time: 1
+    Time: 3
     CustomCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  introCrossFadeDuration: 0.1
+  introCrossFadeDuration: 1
