@@ -6,16 +6,16 @@ Player focus choices (Science / Philosophy / Leadership) alter art and prose in 
 
 ## Documentation References
 
-| Resource | Version | URL |
-|----------|---------|-----|
-| Unity 6 User Manual | 6000.0 | https://docs.unity3d.com/6000.0/Documentation/Manual/ |
-| Unity 6 Scripting API | 6000.0 | https://docs.unity3d.com/6000.0/Documentation/ScriptReference/ |
-| URP Manual | 17.3.0 | https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@17.3/manual/ |
-| URP Scripting API | 17.3.0 | https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@17.3/api/ |
-| Cinemachine Manual | 3.1.6 | https://docs.unity3d.com/Packages/com.unity.cinemachine@3.1/manual/ |
-| Cinemachine Scripting API | 3.1.6 | https://docs.unity3d.com/Packages/com.unity.cinemachine@3.1/api/ |
-| Input System Manual | 1.11.0 | https://docs.unity3d.com/Packages/com.unity.inputsystem@1.11/manual/ |
-| Input System Scripting API | 1.11.0 | https://docs.unity3d.com/Packages/com.unity.inputsystem@1.11/api/ |
+| Resource | Version | URL                                                                                 |
+|----------|---------|-------------------------------------------------------------------------------------|
+| Unity 6 User Manual | 6000.3  | https://docs.unity3d.com/6000.3/Documentation/Manual/                               |
+| Unity 6 Scripting API | 6000.3  | https://docs.unity3d.com/6000.3/Documentation/ScriptReference/                      |
+| URP Manual | 17.3.0  | https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@17.3/manual/ |
+| URP Scripting API | 17.3.0  | https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@17.3/api/    |
+| Cinemachine Manual | 3.1.6   | https://docs.unity3d.com/Packages/com.unity.cinemachine@3.1/manual/                 |
+| Cinemachine Scripting API | 3.1.6   | https://docs.unity3d.com/Packages/com.unity.cinemachine@3.1/api/                    |
+| Input System Manual | 1.11.0  | https://docs.unity3d.com/Packages/com.unity.inputsystem@1.11/manual/                |
+| Input System Scripting API | 1.11.0  | https://docs.unity3d.com/Packages/com.unity.inputsystem@1.11/api/                   |
 
 ---
 
