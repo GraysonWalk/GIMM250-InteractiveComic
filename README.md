@@ -65,6 +65,8 @@ Each `AnimatedStep` child needs its own Animator and clip:
 
 **Persists In Final State:** Tick this on any `AnimatedStep` that should remain visible when the player browses history (UI arrows). Only steps that have already been triggered via the advance button will show — steps not yet reached are always hidden regardless of this setting.
 
+> **Save step children as inactive.** In Prefab Mode, deactivate each step child GameObject before saving. This prevents TMP text components from rendering in the Scene View during initial Editor load before fonts are ready (which produces harmless but noisy *"No Font Asset"* warnings). Adding `AnimatedStep` via the Inspector on a new GameObject does this automatically via `Reset()`.
+
 > **Tip — automatic vs manual panel completion:**
 > By default (`Require Advance To Complete` ticked on the `PanelDataSO`), the advance hint appears after the last step and the player presses spacebar to move on. Untick it for panels whose last step ends cinematically and should flow straight to the next panel with no extra press.
 
@@ -107,6 +109,7 @@ MonoBehaviours
   ComicManager             — panel registry, loop pointer, history navigation
   ComicPanel               — Show/Hide/Advance, drives step sequence
   AnimatedStep             — blocking IPanelStep; optional dialogue text
+  FrameMask                — syncs SpriteMask size to parent 9-sliced SpriteRenderer
   MiniGame (abstract)      — blocking IPanelStep base; subclass for each puzzle
   FocusPoint               — stub; not yet implemented (see AGENTS.md)
   NavigationController     — input events → ComicManager
