@@ -12,20 +12,17 @@ PanelDataSO  [CreateAssetMenu("Comic/Panel Data")]
   │     int rank                           (order within its loop)
   │     LoopCount firstLoop                (loop at which this panel first appears; default Loop0)
   │     LoopCount lastLoop                 (loop at which this panel is retired; default Loop3 = never)
-  │     bool hasScienceVariant
-  │     bool hasPhilosophyVariant
-  │     bool hasLeadershipVariant
   │     bool requireAdvanceToComplete      (default true; untick for cinematic auto-advance panels)
-  │     bool replayAnimationOnRevisit      (default true; untick if content doesn't change between loops)
+  │     bool replayAnimationOnRevisit      (default true; untick if intro animation should skip on loop revisit)
   │     CinemachineBlendDefinition incomingBlend   (how the camera blends INTO this panel)
   │     float introCrossFadeDuration       (animator cross-fade duration at panel start)
   └── One asset per panel — fill in the Inspector, no coding required
       Name assets with zero-padded rank: Panel_01_, Panel_02_ … (Project window sort = comic order)
 
 PlayerChoicesSO  [CreateAssetMenu("Comic/Player Choices")]
-  │     FocusOption ScienceFocus      (None | A | B)
-  │     FocusOption PhilosophyFocus   (None | A | B)
-  │     FocusOption LeadershipFocus   (None | A | B)
+  │     ScienceChoice    ScienceFocus      (None | OptionA | OptionB)
+  │     PhilosophyChoice PhilosophyFocus   (None | OptionA | OptionB)
+  │     LeadershipChoice LeadershipFocus   (None | OptionA | OptionB)
   └── Single shared runtime asset — any system reads choices without referencing ComicManager.
       All scenes share the one PlayerChoices.asset via [SerializeField] references.
 
@@ -33,10 +30,16 @@ PlayerChoicesSO  [CreateAssetMenu("Comic/Player Choices")]
 SHARED ENUMS  (Assets/Code/Scripts/SharedEnums.cs — do not redefine elsewhere)
 ─────────────────────────────────────────
 
-Enum LoopCount    { Loop0, Loop1, Loop2, Loop3 }
-Enum FocusType    { Science, Philosophy, Leadership }
-Enum FocusOption  { None, A, B }
-  // FocusOption replaces three parallel enums — one type covers all three focus axes (DRY).
+Enum LoopCount         { Loop0, Loop1, Loop2, Loop3, Loop4 }
+  LoopCountBounds.Last   static readonly — computed from Enum.GetValues; use instead of a
+                         hardcoded LoopCount.Loop4. Add new values to LoopCount only; consumers
+                         update automatically.
+
+Enum ScienceChoice    { None, OptionA, OptionB }
+Enum PhilosophyChoice { None, OptionA, OptionB }
+Enum LeadershipChoice { None, OptionA, OptionB }
+  // OptionA / OptionB are placeholder names. Rename only in SharedEnums.cs — all consumers
+  // update automatically. Three separate enums (one per focus axis) keep the type system tight.
 
 ─────────────────────────────────────────
 COMIC MANAGEMENT
@@ -74,7 +77,8 @@ NavigationController  (MonoBehaviour — owns Input, calls ComicManager)
   │     // _inputBlocked = true on Advance; unblocked ONLY via OnPanelReadyForInput
   │     // No CinemachineBrain dependency — camera activation does NOT unblock input
   └── NavigationPresenter  (MonoBehaviour — UI display only, no logic)
-        // Shows/hides back arrow, forward arrow, replay button, advance hint
+        // Shows/hides back arrow, forward arrow, replay button, advance hint via CanvasGroup
+        // alpha + blocksRaycasts — never SetActive on Animator-driven buttons (restarts Animator)
         // Reads ComicManager state via events; never calls Advance/Retreat directly
 
 ─────────────────────────────────────────
@@ -95,26 +99,35 @@ IComicPanel
   │     void Hide()
   │     void Advance()
   └── ComicPanel  (MonoBehaviour — implements IComicPanel)
-        │     [SerializeField] PanelDataSO data          (designer sets rank, loop, variant flags)
-        │     [SerializeField] PlayerChoicesSO choices   (read at Show()/ShowInstant() time)
+        │     [SerializeField] PanelDataSO data          (designer sets rank, loop, blend, etc.)
+        │     [SerializeField] PlayerChoicesSO choices   (read at Activate() time per step)
         │     [SerializeField] CinemachineCamera cam     (child object; assigned in Inspector)
         │     [RequireComponent] Animator anim           (same GameObject; resolved via GetComponent in Awake)
         │     IPanelStep[] _steps                        (collected via GetComponentsInChildren in Awake)
+        │     bool _isBlocked                            (starts true in Show(); cleared after intro completes)
         │
-        │     Show()        ──►  enable cam+anim, deactivate all steps, play Intro, wait for completion
-        │     ShowInstant() ──►  enable cam+anim, activate steps where ShowInFinalState=true, snap to end
+        │     Show()        ──►  enable cam+anim, deactivate all steps, _isBlocked=true,
+        │                        play Intro (or skip to end if revisit), wait for completion
+        │     ShowInstant() ──►  enable cam+anim, activate steps where ShowInFinalState=true,
+        │                        snap Animator to end; does NOT fire OnReadyForInput
         │     Hide()        ──►  disable cam+anim, stop coroutine
         │     Replay()      ──►  PrepareForReplay() all steps, reset HasBeenVisited, call Show()
-        │     Advance()     ──►  activate next step; lock input if IsBlocking; fire OnPanelComplete when done
+        │     Advance()     ──►  while loop: read IsBlocking BEFORE Activate(), activate step,
+        │                        if blocking → lock input + register UnblockPanel listener;
+        │                        if non-blocking → auto-chain to next step immediately;
+        │                        fire OnPanelComplete when all steps processed
         │
         │     HasBeenVisited is set at the END of WaitForIntroCompletion() — not at the start of Show().
         │     (If set early, navigating away mid-animation leaves HasBeenVisited=true, causing the panel
         │      to skip to its end state on the next forward visit instead of replaying the animation.)
         │
+        │     _isBlocked starts TRUE at the top of Show() — input must be locked from the moment
+        │     the panel begins showing, before the intro animation finishes.
+        │
         └── Steps  (children implementing IPanelStep, activated in hierarchy top-to-bottom order)
-              ├── AnimatedStep     — plays an animation clip; optional variant dialogue text
+              ├── AnimatedStep     — plays an animation clip; optional focus-variant PanelText children
               ├── MiniGame         — abstract; subclass for each puzzle (e.g. SignalGame)
-              └── FocusPoint       — STUB; will write a FocusOption to PlayerChoicesSO (see AGENTS.md)
+              └── FocusPoint       — STUB; will write a choice to PlayerChoicesSO (see AGENTS.md)
 
 ─────────────────────────────────────────
 IPANELSTEP CONTRACT
@@ -137,6 +150,62 @@ through Advance() plays its animation outside the blocking system, permanently l
 advance button because UnblockPanel is never registered as a listener.
 
 ─────────────────────────────────────────
+STEPBASE
+─────────────────────────────────────────
+
+StepBase  (abstract MonoBehaviour — shared base for all IPanelStep implementations)
+  │     bool replayOnRevisit    — controls loop-revisit behaviour ONLY (not the Replay button)
+  │     bool hideOnRevisit      — controls loop-revisit behaviour ONLY (not the Replay button)
+  │     bool _hasBeenActivated  — private; read via HasBeenActivated (protected)
+  │     bool IsBlocking         ── !_hasBeenActivated || replayOnRevisit
+  │                                MUST be read BEFORE calling Activate() — Activate() calls
+  │                                BeginActivation() which sets _hasBeenActivated=true, changing
+  │                                IsBlocking for steps with replayOnRevisit=false. Reading after
+  │                                Activate() incorrectly treats first-visit steps as non-blocking,
+  │                                causing the auto-chain loop to fire two steps simultaneously.
+  │     PrepareForReplay()      ── unconditionally resets _hasBeenActivated=false so the Replay
+  │                                button always replays all steps. Override in subclasses that
+  │                                should preserve state (e.g. FocusPoint keeps its chosen option).
+  │     BeginActivation()       ── sets _hasBeenActivated=true; returns skip=true on loop revisit
+  │                                when replayOnRevisit=false
+  └── Loop-revisit behaviour (replayOnRevisit / hideOnRevisit) affects BeginActivation() only.
+      Explicit replay (Replay button) always resets via PrepareForReplay(); flags are irrelevant.
+
+Loop-revisit modes (only apply during story-forward Show() on a previously visited panel):
+  replayOnRevisit=true,  hideOnRevisit=—     → full animation replay; blocks input
+  replayOnRevisit=false, hideOnRevisit=false → snaps to final frame; auto-chained, no advance press
+  replayOnRevisit=false, hideOnRevisit=true  → stays hidden; auto-chained, no advance press
+
+─────────────────────────────────────────
+ANIMATEDSTEP
+─────────────────────────────────────────
+
+AnimatedStep  (sealed MonoBehaviour — extends StepBase)
+  │     [SerializeField] bool persistsInFinalState
+  │     [RequireComponent] Animator _anim           (resolved via GetComponent in Awake)
+  │     ShowInFinalState => persistsInFinalState && HasBeenActivated
+  │
+  │     Activate(choices):
+  │       skip = BeginActivation()
+  │       !skip           → populate PanelText children, SetActive(true), SeekAnimator(0f)
+  │       skip && !hide   → SetActive(true), SeekAnimator(1f)  [frozen/final state]
+  │       skip && hide    → stay deactivated; IsBlocking=false; Advance() auto-chains
+  │
+  │     SeekAnimator(normalizedTime):
+  │       Update(0f)                              — resolve Entry→default-state transition
+  │       GetCurrentAnimatorStateInfo(0).fullPathHash — read hash at runtime; designers name
+  │                                                     states freely, no static hash possible
+  │       Play(hash, 0, normalizedTime)
+  │       Update(0f)                              — evaluate Animator at target time
+  │
+  │     OnAnimationFinished()  — Animation Event on last keyframe; calls OnStepComplete.Invoke()
+  │     Reset()                — called by Unity on component add: SetActive(false), replayOnRevisit=true
+  │
+  └── PanelText  (child MonoBehaviour — focus-variant text display)
+        Animator controls visibility. Holds variant text strings per choice combination.
+        Populate(choices) selects the correct string at activation time.
+
+─────────────────────────────────────────
 COMMANDS
 ─────────────────────────────────────────
 
@@ -157,6 +226,34 @@ ICommand
             Undo() and Redo() both call ShowInstant() — history navigation never replays animations.
 
 ─────────────────────────────────────────
+TOOLTIP & CURSOR SYSTEMS
+─────────────────────────────────────────
+
+TooltipTrigger  (MonoBehaviour — IPointerEnterHandler / IPointerExitHandler)
+  │     static event Action<string> OnShow   (fired on pointer enter if message is non-empty)
+  │     static event Action OnHide           (fired on pointer exit and OnDisable)
+  └── Attach to any hoverable UI element; fill in the Message field. No other wiring needed.
+
+TooltipDisplay  (MonoBehaviour — subscribes to TooltipTrigger static events)
+  │     [SerializeField] GameObject tooltipPanel   (the small visual child; saved inactive)
+  │     [SerializeField] TMP_Text label
+  │     CanvasGroup on tooltipPanel                (alpha fade; blocksRaycasts=false prevents flicker)
+  └── Parent stays always active for OnEnable subscriptions; only tooltipPanel is shown/hidden.
+      Position computed via ScreenPointToLocalPointInRectangle; pivot flips near screen edges.
+      tooltipPanel anchor must be (0.5, 0.5).
+
+CursorManager  (MonoBehaviour)
+  │     [SerializeField] Texture2D defaultCursor
+  │     static ApplyDefault()      — sets default cursor with CursorMode.ForceSoftware
+  └── Attach to a persistent GameObject; ApplyDefault() called in Awake so default cursor
+      is active immediately in the Editor on macOS (Project Settings cursor is unreliable there).
+
+CursorTrigger  (MonoBehaviour — IPointerEnterHandler / IPointerExitHandler)
+  │     [SerializeField] Texture2D cursorTexture
+  └── OnPointerEnter: set custom cursor. OnPointerExit + OnDisable: CursorManager.ApplyDefault().
+      Always uses CursorMode.ForceSoftware — required on macOS.
+
+─────────────────────────────────────────
 INTERFACES SUMMARY
 ─────────────────────────────────────────
 
@@ -166,6 +263,7 @@ IComicPanel    — Rank, FirstLoop, LastLoop, IncomingBlend, HasBeenVisited,
 IPanelStep     — IsBlocking, ShowInFinalState, OnStepComplete,
                  Activate(PlayerChoicesSO), Deactivate(), PrepareForReplay()
 ICommand       — Execute(), Undo()
+IMiniGame      — OnGameComplete, OnGameFailed, StartGame(), EndGame()
 
 ─────────────────────────────────────────
 KEY DESIGN DECISIONS
@@ -181,9 +279,8 @@ KEY DESIGN DECISIONS
   set it lower on the asset to stop a panel appearing after a specific loop.
   Panel eligibility logic lives solely in PanelSelector.
 
-• List<IComicPanel> replaces Dictionary — rank lives on PanelDataSO, no duplication.
-
-• FocusOption enum (single) replaces three parallel enums — one type, three axes.
+• LoopCountBounds.Last replaces hardcoded LoopCount.Loop4 — derived automatically from
+  the enum via Enum.GetValues, so adding a new loop value requires only one file change.
 
 • CommandHistory (two stacks) replaces CommandQueue — correct structure for undo/redo.
   Undo/Redo use ShowInstant(); Execute uses Show() — history never replays animations.
@@ -197,15 +294,42 @@ KEY DESIGN DECISIONS
 • HasBeenVisited set at end of WaitForIntroCompletion() — navigating away mid-animation
   leaves HasBeenVisited false so the animation replays correctly on the next visit.
 
-• [RequireComponent(typeof(Animator))] on ComicPanel — Animator is always co-located on
-  the same GameObject, so it is resolved via GetComponent in Awake rather than [SerializeField].
-  Prevents accidental removal and eliminates one manual wiring step per variant.
+• _isBlocked starts true in Show() — input is blocked from the moment the panel begins
+  showing, before the intro animation finishes, preventing premature step activation.
+
+• IsBlocking is read BEFORE Activate() in ComicPanel.Advance() — Activate() calls
+  BeginActivation() which sets _hasBeenActivated=true, changing IsBlocking post-call for
+  steps with replayOnRevisit=false. Reading after would incorrectly treat first-visit
+  steps as non-blocking, causing the auto-chain loop to fire two steps simultaneously.
+
+• Advance() auto-chains non-blocking steps in a single burst (while loop, not if/else) —
+  on revisit, all frozen/hidden steps appear on one advance press without individual presses.
+  The loop terminates at: a blocking step, the last step, or OnPanelComplete.
+
+• PrepareForReplay() unconditionally resets _hasBeenActivated — the Replay button always
+  replays every step regardless of replayOnRevisit / hideOnRevisit. Those flags are loop-
+  revisit only. Subclasses override PrepareForReplay() to preserve state (e.g. FocusPoint).
+
+• replayOnRevisit / hideOnRevisit flags control loop-revisit behaviour via BeginActivation()
+  only — not the Replay button. Two bools (not an enum) serialise cleanly as Inspector
+  checkboxes and avoid serialisation migration if names change.
+
+• CanvasGroup alpha + blocksRaycasts for NavigationPresenter button visibility — never
+  SetActive(false) on Animator-driven buttons; re-enabling restarts the Animator from its
+  Entry state, causing a flash of the default state on every show.
 
 • NavigationController unblocks input ONLY via OnPanelReadyForInput — the prior
   OnCameraActivated (Cinemachine blend complete) approach caused a race condition where
   the blend could finish before the panel's intro animation, unlocking input prematurely.
 
 • InputAction.performed callback replaces Update() polling in NavigationController.
+
+• CursorMode.ForceSoftware in CursorTrigger and CursorManager — required on macOS;
+  hardware cursors are intercepted by the OS in the Editor.
+
+• [RequireComponent(typeof(Animator))] on ComicPanel and AnimatedStep — Animator is always
+  co-located on the same GameObject, resolved via GetComponent in Awake, not [SerializeField].
+  Prevents accidental removal and eliminates one manual wiring step per variant.
 
 ─────────────────────────────────────────
 SCENE SETUP FOR A PANEL
@@ -219,7 +343,7 @@ IMPORTANT — Animator placement rule:
 ComicPanel_XX_Name (GameObject)          ← ComicPanel.cs + Animator live HERE (root)
   ├── CinemachineCamera                  ← one per panel; starts disabled automatically
   ├── Step_01_Reveal                     ← AnimatedStep (first spacebar press)
-  ├── Step_02_Dialogue                   ← AnimatedStep with Label assigned (second press)
+  ├── Step_02_Dialogue                   ← AnimatedStep with PanelText child(ren) (second press)
   ├── Step_03_SpriteIn                   ← AnimatedStep, purely visual (third press)
   └── Step_04_Puzzle                     ← MiniGame subclass (fourth press — blocks until complete)
 
@@ -227,41 +351,37 @@ Steps activate in hierarchy top-to-bottom order. Reorder by dragging GameObjects
 CinemachineCamera starts disabled by Awake(); ComicManager.Start() enables the first panel via Show().
 
 ─────────────────────────────────────────
-ORDER OF STEPS IN A PANEL
-─────────────────────────────────────────
-
-Spacebar presses proceed 1 → 2 → 3 → 4. Reorder steps by dragging GameObjects in the Hierarchy.
-
-ComicPanel_02_Lab          ← ComicPanel.cs + Animator live here
-  ├── Step_01_PanelReveal  ← Step 1 — AnimatedStep (panel slides/fades in)
-  ├── Step_02_Dialogue_A   ← Step 2 — AnimatedStep with Label (first caption)
-  ├── Step_03_SpriteReveal ← Step 3 — AnimatedStep, visual reveal
-  ├── Step_04_Dialogue_B   ← Step 4 — AnimatedStep with Label (second caption)
-  └── Step_05_Puzzle       ← Step 5 — MiniGame subclass
-
-─────────────────────────────────────────
 SET UP AN ANIMATED STEP
 ─────────────────────────────────────────
 
 1. Add a child GameObject to the ComicPanel root.
-2. Add an Animator component to that child.
+2. Add AnimatedStep — Animator is added automatically via [RequireComponent].
 3. Create an animation clip; set it as the Animator's default state; disable Loop Time.
 4. On the last keyframe, add an Animation Event → Function: OnAnimationFinished
-5. Add an AnimatedStep component to the child.
+5. The step blocks input until that event fires, then the next advance press is accepted.
 
-Optional dialogue text: assign a TMP_Text to the Label field. Fill in variant text fields
-to show different dialogue based on the player's focus choices.
+Optional focus-variant text: add one or more child GameObjects with a PanelText component.
+Use AnimatedStep's Animator to control when each text element appears. Fill in variant text
+fields on each PanelText for each choice combination; empty fields fall back to defaultText.
 
 Persists In Final State: tick this on any AnimatedStep that should remain visible when the
 player browses history (UI arrows). Only steps already triggered via Advance() will show —
 steps not yet reached are always hidden regardless of this setting (ShowInFinalState guard).
+
+Loop-revisit behaviour (does NOT affect the Replay button — that always replays everything):
+  Replay On Revisit ✅, Hide On Revisit —     → full animation replays, blocks input
+  Replay On Revisit ☐,  Hide On Revisit ☐    → snaps to final frame; no advance press needed
+  Replay On Revisit ☐,  Hide On Revisit ✅   → stays hidden entirely; no advance press needed
+
+Save step children as inactive in Prefab Mode before saving — prevents TMP "No Font Asset"
+warnings during Editor load. AnimatedStep.Reset() does this automatically for new components.
 
 ─────────────────────────────────────────
 SET UP A MINI GAME
 ─────────────────────────────────────────
 
 ComicPanel_XX_Name (GameObject)
-  ├── Step_01_Dialogue      ← AnimatedStep — shown first, non-blocking
+  ├── Step_01_Dialogue      ← AnimatedStep — shown first
   ├── Step_02_Puzzle        ← MiniGame subclass — blocks until Complete() or Fail() called
   │     └── MyPuzzle.cs     ← extends MiniGame; overrides StartGame(); calls Complete()
   └── Step_03_Result        ← AnimatedStep — shown after puzzle finishes
