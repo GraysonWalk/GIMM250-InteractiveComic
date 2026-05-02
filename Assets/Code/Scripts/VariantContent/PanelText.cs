@@ -16,7 +16,7 @@ using UnityEngine;
 ///     4. Save the child as inactive in Prefab Mode to prevent spurious TMP editor warnings.
 /// </summary>
 [RequireComponent(typeof(TextMeshPro))]
-public class PanelText : MonoBehaviour
+public class PanelText : MonoBehaviour, IVariantContent
 {
     #region Variables
 
