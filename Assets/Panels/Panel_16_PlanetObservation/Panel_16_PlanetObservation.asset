@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Panel_16_PlanetObservation
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
   firstLoop: 0
-  lastLoop: 3
+  lastLoop: 4
   hasLeadershipVariant: 0
   hasPhilosophyVariant: 0
   hasScienceVariant: 0

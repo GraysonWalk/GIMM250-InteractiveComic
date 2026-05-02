@@ -1,6 +1,8 @@
 # GIMM250 — Interactive Comic
 
-Player focus choices (Science / Philosophy / Leadership) alter art and prose in specific panels. Navigation supports back/forward through history without replaying animations.
+An interactive comic system built in Unity, designed for the GIMM250 final project. The system supports a looping 
+structure with player choices that affects the art in each panel and what text they contain. It also includes features 
+for tooltips and custom cursors.
 
 ---
 
@@ -80,6 +82,16 @@ Each `AnimatedStep` child needs its own Animator and clip:
 
 **Persists In Final State:** Tick this on any `AnimatedStep` that should remain visible when the player browses history (UI arrows). Only steps that have already been triggered via the advance button will show — steps not yet reached are always hidden regardless of this setting.
 
+**Revisit behaviour:** Use the two flags on `AnimatedStep` to control what happens when the player sees a panel again in a later loop:
+
+| `Replay On Revisit` | `Hide On Revisit` | What happens on revisit |
+|---|---|---|
+| ✅ | — | Full animation replays and blocks input, same as first visit |
+| ☐ | ☐ | Snaps to final frame instantly; appears with no advance press needed |
+| ☐ | ✅ | Stays hidden entirely; requires no advance press |
+
+When a panel is revisited, all non-blocking steps (frozen or hidden) activate in a single burst on one advance press before the first blocking step or panel completion.
+
 > **Save step children as inactive.** In Prefab Mode, deactivate each step child GameObject before saving. This prevents TMP text components from rendering in the Scene View during initial Editor load before fonts are ready (which produces harmless but noisy *"No Font Asset"* warnings). Adding `AnimatedStep` via the Inspector on a new GameObject does this automatically via `Reset()`.
 
 > **Tip — automatic vs manual panel completion:**
@@ -123,30 +135,70 @@ Multiple `PanelText` children can exist under one `AnimatedStep`, each with inde
 
 ```
 ScriptableObjects          — designer-editable data
-  PanelDataSO              — rank, firstLoop, lastLoop, blend, variant flags per panel
+  PanelDataSO              — rank, firstLoop, lastLoop, blend, completion config per panel
   PlayerChoicesSO          — shared state for all three focuses
 
 MonoBehaviours            
   ComicManager             — panel registry, loop pointer, history navigation
   ComicPanel               — Show/Hide/Advance, drives step sequence
+  StepBase                 — abstract base for all IPanelStep implementations
   AnimatedStep             — blocking IPanelStep; populates PanelText children on activate
   PanelText                — focus-variant text (dialogue/prose/captions); child of AnimatedStep
   FrameMask                — syncs SpriteMask size to parent 9-sliced SpriteRenderer
   MiniGame (abstract)      — blocking IPanelStep base; subclass for each puzzle
   FocusPoint               — stub; not yet implemented (see AGENTS.md)
+  FocusPointPresenter      — stub; mirrors NavigationPresenter for FocusPoint UI
   NavigationController     — input events → ComicManager
   NavigationPresenter      — UI arrows, replay button, advance hint
+  TooltipTrigger           — fires static events on pointer enter/exit; attach to any hoverable
+  TooltipDisplay           — subscribes to TooltipTrigger; positions + fades tooltip panel
+  CursorTrigger            — changes OS cursor on hover; restores default on exit
+  CursorManager            — sets default cursor on startup; exposes static ApplyDefault()
+  TitleScreenController    — stub; title screen UI + scene transition
+  EndScreenController      — stub; end screen UI + restart/quit
+
+Editor-only
+  PanelViewLock            — solo-locks a CinemachineCamera in Game View for editing
 
 Plain C#                  
   PanelSelector            — picks next panel by rank + loop eligibility
   CommandHistory           — two-stack undo/redo (Execute/Undo/Redo)
   SwitchCameraCommand      — ICommand; Show/Hide panels, set Cinemachine blend
+  LoopCountBounds          — static readonly Last; computed from LoopCount enum
 ```
 
 ### Key Rules
 - **Camera switching** — enable/disable `CinemachineCamera` components only. Never change priority. One enabled = active; Cinemachine Brain blends automatically.
 - **Player choices** — read `PlayerChoicesSO` directly via `[SerializeField]`. No class should reference `ComicManager` just to get choices.
 - **Input** — subscribe to `InputAction.performed` in `OnEnable`, unsubscribe in `OnDisable`. Never poll in `Update`.
+- **Loop bounds** — use `LoopCountBounds.Last` instead of a hardcoded `LoopCount.Loop3`. Add new values to `LoopCount` in `SharedEnums.cs` only.
+
+---
+
+## Tooltips
+
+Add `TooltipTrigger` to any hoverable GameObject, fill in the **Message** field. No other wiring required.
+
+`TooltipDisplay` lives on a persistent parent inside the Canvas. It subscribes to `TooltipTrigger`'s static events automatically. Required Inspector assignments on `TooltipDisplay`:
+
+| Slot | What to assign |
+|---|---|
+| **Tooltip Panel** | The small child GameObject with the background + label |
+| **Label** | The `TMP_Text` component inside that child |
+
+> **Tooltip Panel setup:** anchor to centre **(0.5, 0.5)**, add a `CanvasGroup` component. Save as **inactive** in the scene.
+
+---
+
+## Custom Cursors
+
+Add `CursorManager` to any persistent GameObject (e.g. the same one as `ComicManager`). Assign the **Default Cursor** texture — this is set at startup and restored whenever the pointer leaves a `CursorTrigger` element.
+
+Add `CursorTrigger` to any hoverable GameObject alongside `TooltipTrigger`. Assign the **Cursor Texture** for that element.
+
+> **Texture import settings:** Texture Type → **Cursor**, Read/Write enabled. On macOS the Editor requires `CursorMode.ForceSoftware` (already set in `CursorTrigger`) — hardware cursors are intercepted by the OS.
+
+---
 
 ### Data Assets Location
 ```

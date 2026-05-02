@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 ///     NextPanel() and PreviousPanel() are called by UI arrow buttons to jump
 ///     between already-visited panels instantly, with no animations.
 /// </summary>
-public class NavigationController : MonoBehaviour, INavigationController
+public class NavigationController : MonoBehaviour
 {
     #region Variables
 

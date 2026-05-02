@@ -74,6 +74,9 @@ public class ComicPanel : MonoBehaviour, IComicPanel
 
     private void OnValidate()
     {
+        // Skip validation on the base prefab asset — it intentionally has no data assigned.
+        // Variants and scene instances have a valid scene; the base prefab asset does not.
+        if (!gameObject.scene.IsValid()) return;
         ValidateReferences();
     }
 
@@ -110,7 +113,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         }
 
         _currentStep = 0;
-        _isBlocked = false;
+        _isBlocked = true; // Blocked until the intro animation finishes.
         _anim.enabled = true;
         cam.enabled = true;
 
@@ -180,41 +183,53 @@ public class ComicPanel : MonoBehaviour, IComicPanel
     }
 
     /// <summary>
-    ///     Activates the next step in sequence. Locks input until the step fires OnStepComplete.
-    ///     Fires OnPanelComplete when all steps have been shown.
+    ///     Activates the next step in sequence.
+    ///     Blocking steps (blocking = true) lock input until OnStepComplete fires.
+    ///     Non-blocking steps (frozen or hidden revisit steps) are chained through automatically
+    ///     in a single burst — the player does not press advance for each one individually.
+    ///     Fires OnPanelComplete when all steps have been processed.
     /// </summary>
     public void Advance()
     {
         if (_isBlocked) return;
 
-        if (_steps.Length == 0 || _currentStep >= _steps.Length)
+        while (true)
         {
-            OnPanelComplete.Invoke();
-            return;
-        }
-
-        IPanelStep step = _steps[_currentStep];
-        _currentStep++;
-        step.Activate(choices);
-
-        if (step.IsBlocking)
-        {
-            _isBlocked = true;
-            step.OnStepComplete.AddListener(UnblockPanel);
-        }
-        else if (_currentStep >= _steps.Length)
-        {
-            // Last step was non-blocking. If the panel requires an explicit advance press,
-            // signal ready-for-input and let the next Advance() call fire OnPanelComplete.
-            // Otherwise, complete immediately.
-            if (data.RequireAdvanceToComplete)
-                OnReadyForInput.Invoke();
-            else
+            if (_currentStep >= _steps.Length)
+            {
                 OnPanelComplete.Invoke();
-        }
-        else
-        {
-            OnReadyForInput.Invoke();
+                return;
+            }
+
+            IPanelStep step = _steps[_currentStep];
+            _currentStep++;
+
+            // IsBlocking must be read BEFORE Activate() — Activate() calls BeginActivation() which
+            // sets _hasBeenActivated = true, changing IsBlocking's return value for steps where
+            // replayOnRevisit = false. Reading it here captures the correct pre-activation intent.
+            bool blocking = step.IsBlocking;
+            step.Activate(choices);
+
+            if (blocking)
+            {
+                _isBlocked = true;
+                step.OnStepComplete.AddListener(UnblockPanel);
+                return;
+            }
+
+            if (_currentStep >= _steps.Length)
+            {
+                // Last step was non-blocking. Wait for an explicit advance press if required,
+                // otherwise complete the panel immediately.
+                if (data.RequireAdvanceToComplete)
+                    OnReadyForInput.Invoke();
+                else
+                    OnPanelComplete.Invoke();
+                return;
+            }
+
+            // Non-blocking and not the last step — auto-chain to the next step without
+            // requiring an additional advance press.
         }
     }
 
@@ -262,6 +277,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         // If the player navigated away mid-animation, this line never runs,
         // so HasBeenVisited stays false and the animation replays on next visit.
         HasBeenVisited = true;
+        _isBlocked = false;
         OnReadyForInput.Invoke();
     }
 
@@ -274,7 +290,10 @@ public class ComicPanel : MonoBehaviour, IComicPanel
     {
         yield return null;
         if (cam.enabled)
+        {
+            _isBlocked = false;
             OnReadyForInput.Invoke();
+        }
     }
 
     #endregion

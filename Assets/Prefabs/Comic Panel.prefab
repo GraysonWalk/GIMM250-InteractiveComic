@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea21de7996be4c74a43af8e831f142c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComicPanel
-  data: {fileID: 11400000, guid: 37c3b5606b811428abfb5b82322deae5, type: 2}
+  data: {fileID: 0}
   choices: {fileID: 11400000, guid: 9f5662d2cf4ac47b09986535f7d5e605, type: 2}
   cam: {fileID: 8934351034356299496}
 --- !u!95 &3680867659152069017

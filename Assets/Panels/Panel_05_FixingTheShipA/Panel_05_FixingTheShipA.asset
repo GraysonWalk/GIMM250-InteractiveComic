@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Panel_05_FixingTheShipA
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
   firstLoop: 0
+  lastLoop: 3
   hasLeadershipVariant: 0
   hasPhilosophyVariant: 0
   hasScienceVariant: 0
-  rank: 0
+  rank: 50
   requireAdvanceToComplete: 1
   replayAnimationOnRevisit: 1
   incomingBlend:

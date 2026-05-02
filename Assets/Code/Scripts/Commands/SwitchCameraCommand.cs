@@ -46,7 +46,7 @@ public class SwitchCameraCommand : ICommand
     /// <summary>Forward story progression — uses this panel's configured blend and plays the full animation.</summary>
     public void Execute()
     {
-        if (_brain != null) _brain.DefaultBlend = _blend;
+        SetBlend(_blend);
         PanelAfterUndo?.Hide();
         PanelAfterExecute.Show();
     }
@@ -54,8 +54,7 @@ public class SwitchCameraCommand : ICommand
     /// <summary>History navigation backward — blends to the previous panel's end state.</summary>
     public void Undo()
     {
-        if (_brain != null)
-            _brain.DefaultBlend = PanelAfterUndo != null ? PanelAfterUndo.IncomingBlend : InstantCut;
+        SetBlend(PanelAfterUndo != null ? PanelAfterUndo.IncomingBlend : InstantCut);
         PanelAfterExecute.Hide();
         PanelAfterUndo?.ShowInstant();
     }
@@ -63,10 +62,14 @@ public class SwitchCameraCommand : ICommand
     /// <summary>History navigation forward — blends to the target panel's end state.</summary>
     public void Redo()
     {
-        if (_brain != null)
-            _brain.DefaultBlend = PanelAfterExecute.IncomingBlend;
+        SetBlend(PanelAfterExecute.IncomingBlend);
         PanelAfterUndo?.Hide();
         PanelAfterExecute.ShowInstant();
+    }
+
+    private void SetBlend(CinemachineBlendDefinition blend)
+    {
+        if (_brain != null) _brain.DefaultBlend = blend;
     }
 
     #endregion

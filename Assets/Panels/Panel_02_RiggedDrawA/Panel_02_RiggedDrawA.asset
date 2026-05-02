@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Panel_02_RiggedDrawA
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
   firstLoop: 1
+  lastLoop: 4
   hasLeadershipVariant: 0
   hasPhilosophyVariant: 0
   hasScienceVariant: 0

@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Panel_01_TheSignal
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
   firstLoop: 0
+  lastLoop: 4
   hasLeadershipVariant: 0
   hasPhilosophyVariant: 0
   hasScienceVariant: 0
   rank: 10
+  requireAdvanceToComplete: 1
   replayAnimationOnRevisit: 0
   incomingBlend:
     Style: 1
@@ -27,3 +29,4 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  introCrossFadeDuration: 0.1

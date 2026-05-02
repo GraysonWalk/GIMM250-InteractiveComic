@@ -1,46 +1,39 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 /// <summary>
 ///     A blocking animated step. Attach to any child GameObject of a ComicPanel.
 ///     Each step plays its animation when activated and locks Advance() until
 ///     OnAnimationFinished() is called by the Animation Event on the last keyframe.
-///     Optionally assign a TMP_Text label to display dialogue alongside the animation.
-///     Leave label unassigned for purely visual steps (sprite reveals, panel effects, etc.).
+///     Add PanelText child GameObjects to display focus-variant text alongside the animation.
 ///     Designer workflow:
 ///     1. Add a child GameObject under ComicPanel; attach this component + an Animator.
 ///     2. Set the Animator Controller's default state to your clip; disable Loop Time.
 ///     3. On the last keyframe add an Animation Event pointing to OnAnimationFinished().
-///     4. Optionally: assign a TMP_Text for dialogue and fill in variant overrides.
+///     4. Optionally: add PanelText children and fill in variant text in the Inspector.
 ///     5. Tick "Persists In Final State" if this element should remain visible at the panel's end.
 /// </summary>
-public sealed class AnimatedStep : MonoBehaviour, IPanelStep
+[RequireComponent(typeof(Animator))]
+public sealed class AnimatedStep : StepBase
 {
     #region Variables
 
     [Tooltip("If ticked, this element remains visible when the panel reaches its final state.")]
     [SerializeField] private bool persistsInFinalState;
 
-    [Tooltip("If ticked, this step replays its animation when the panel is replayed. " +
-             "Untick for steps that should never repeat (e.g. a choice prompt already answered).")]
-    [SerializeField] private bool replayOnRevisit = true;
-
-    // True after the first Activate() call. Combined with replayOnRevisit to decide
-    // whether to block input and animate, or skip instantly on subsequent visits.
-    private bool _hasBeenActivated;
-
-    // Blocks input until OnAnimationFinished fires — unless this step has already run
-    // and replayOnRevisit is false, in which case it is skipped without blocking.
-    public bool IsBlocking => !_hasBeenActivated || replayOnRevisit;
-
     // True only when this step was designed to persist AND has actually been run via Advance().
-    // Prevents ShowInstant() from playing the animation outside of the normal blocking sequence.
-    public bool ShowInFinalState => persistsInFinalState && _hasBeenActivated;
-    public UnityEvent OnStepComplete { get; } = new();
+    // Prevents ShowInstant() from playing the animation outside the normal blocking sequence.
+    public override bool ShowInFinalState => persistsInFinalState && HasBeenActivated;
+
+    private Animator _anim;
 
     #endregion
 
     #region Methods
+
+    private void Awake()
+    {
+        _anim = GetComponent<Animator>();
+    }
 
     /// <summary>
     ///     Called by an Animation Event on the last frame of this step's clip.
@@ -52,56 +45,55 @@ public sealed class AnimatedStep : MonoBehaviour, IPanelStep
     }
 
     /// <summary>
-    ///     Activates this step. On first visit (or replay): populates any PanelText children
-    ///     with focus-variant text, then plays the animation. On revisit when replayOnRevisit is
-    ///     false: shows the element in its last-frame state instantly, without blocking input or
-    ///     replaying the animation.
+    ///     Activates this step.
+    ///     First visit (or replay): populates PanelText children and plays the animation from the start.
+    ///     Revisit with hideOnRevisit = false: snaps to the final frame; no animation, no advance press.
+    ///     Revisit with hideOnRevisit = true: stays hidden; no advance press. ComicPanel auto-chains.
     /// </summary>
-    public void Activate(PlayerChoicesSO choices)
+    public override void Activate(PlayerChoicesSO choices)
     {
-        bool skip = _hasBeenActivated && !replayOnRevisit;
-        _hasBeenActivated = true;
+        bool skip = BeginActivation();
 
-        // Only populate text when actually playing — preserves the text from the original visit
-        // when skipping, since a different choice may now be active.
         if (!skip)
         {
+            // First visit (or replay) — populate text and play the animation from the start.
             PanelText[] texts = GetComponentsInChildren<PanelText>(true);
             foreach (PanelText text in texts)
                 text.Populate(choices);
-        }
 
-        // Enabling the GameObject lets the Animator resume from where it was last left.
-        // For skipped steps this is the end frame; for replayed steps ComicPanel.Replay()
-        // will have reset _hasBeenActivated so the full animation plays again.
-        gameObject.SetActive(true);
+            gameObject.SetActive(true);
+            SeekAnimator(0f);
+        }
+        else if (!hideOnRevisit)
+        {
+            // Revisit, show frozen — snap to the end frame without animating.
+            gameObject.SetActive(true);
+            SeekAnimator(1f);
+        }
+        // else: hideOnRevisit = true → stay deactivated. IsBlocking is false so ComicPanel auto-chains.
     }
 
-    /// <summary>Hides this element.</summary>
-    public void Deactivate()
+    // Settles the Animator into its default state then seeks to the given normalised time.
+    // Update(0f) before the hash query ensures the Entry → default-state transition is resolved.
+    // GetCurrentAnimatorStateInfo is used rather than a cached hash because designers name their
+    // Animator states freely — there is no single state name to cache at code-writing time.
+    private void SeekAnimator(float normalizedTime)
     {
-        gameObject.SetActive(false);
+        _anim.Update(0f);
+        AnimatorStateInfo state = _anim.GetCurrentAnimatorStateInfo(0);
+        _anim.Play(state.fullPathHash, 0, normalizedTime);
+        _anim.Update(0f);
     }
 
     /// <summary>
     ///     Called by Unity when the component is first added in the Editor.
-    ///     Starts inactive so TMP components on this step don't render in the Scene View
-    ///     before fonts are loaded, preventing spurious "No Font Asset" warnings on scene open.
+    ///     Starts inactive and defaults replayOnRevisit to true (animated steps replay by default).
+    ///     Prevents spurious TMP "No Font Asset" warnings on scene open.
     /// </summary>
     private void Reset()
     {
         gameObject.SetActive(false);
-    }
-
-    /// <summary>
-    ///     Resets visited state if this step should replay, so it blocks input and
-    ///     animates again on the next Activate(). Steps with replayOnRevisit = false
-    ///     are left untouched — they will still skip on the next pass.
-    /// </summary>
-    public void PrepareForReplay()
-    {
-        if (replayOnRevisit)
-            _hasBeenActivated = false;
+        replayOnRevisit = true;
     }
 
     #endregion

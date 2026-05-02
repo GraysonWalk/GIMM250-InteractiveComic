@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22e9f67ad077496294eb8e95c874cd4c, type: 3}
   m_Name: PlayerChoices
   m_EditorClassIdentifier: Assembly-CSharp::PlayerChoicesSO
-  leadershipFocus: 0
-  philosophyFocus: 0
   scienceFocus: 0
+  philosophyFocus: 0
+  leadershipFocus: 0

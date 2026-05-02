@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Panel_04_DrawingLots
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
   firstLoop: 0
+  lastLoop: 4
   hasLeadershipVariant: 0
   hasPhilosophyVariant: 0
   hasScienceVariant: 0
@@ -28,3 +29,4 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  introCrossFadeDuration: 0.1

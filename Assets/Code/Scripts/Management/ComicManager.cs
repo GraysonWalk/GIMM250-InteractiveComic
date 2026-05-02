@@ -14,7 +14,7 @@ public class ComicManager : MonoBehaviour
     [SerializeField] private List<ComicPanel> comicPanels;
     [SerializeField] private CinemachineBrain brain;
 
-    private ComicPanel _currentComicPanel;
+    private IComicPanel _currentComicPanel;
     private IComicPanel _displayedPanel;
     private IComicPanel _replayingPanel; // panel currently being replayed (null when not replaying)
     private bool _isReplaying;
@@ -50,7 +50,7 @@ public class ComicManager : MonoBehaviour
     {
         // Subscribe to and show the first eligible panel — the only manual subscription needed.
         // All subsequent panels are subscribed to via SwitchToPanel() as the comic advances.
-        ComicPanel first = PanelSelector.NextPanel(comicPanels, null, _currentLoopCount);
+        IComicPanel first = PanelSelector.NextPanel(comicPanels, null, _currentLoopCount);
         if (first != null)
             SwitchToPanel(first);
         else
@@ -174,7 +174,7 @@ public class ComicManager : MonoBehaviour
     ///     Moves the OnPanelComplete and OnReadyForInput subscriptions from whatever panel
     ///     was current to <paramref name="next" />.
     /// </summary>
-    private void RewireCurrentPanel(ComicPanel next)
+    private void RewireCurrentPanel(IComicPanel next)
     {
         if (_currentComicPanel != null)
         {
@@ -193,9 +193,9 @@ public class ComicManager : MonoBehaviour
     ///     Switches to a new panel, routes the camera switch through CommandHistory
     ///     so the transition is undoable and redoable.
     /// </summary>
-    private void SwitchToPanel(ComicPanel next)
+    private void SwitchToPanel(IComicPanel next)
     {
-        ComicPanel prev = _currentComicPanel;
+        IComicPanel prev = _currentComicPanel;
         RewireCurrentPanel(next);
 
         // First launch always cuts so the main camera doesn't travel through empty space.
@@ -220,7 +220,7 @@ public class ComicManager : MonoBehaviour
     /// </summary>
     private void MoveToNextPanel()
     {
-        ComicPanel next = PanelSelector.NextPanel(comicPanels, _currentComicPanel, _currentLoopCount);
+        IComicPanel next = PanelSelector.NextPanel(comicPanels, _currentComicPanel, _currentLoopCount);
 
         if (next == null)
         {
@@ -230,13 +230,12 @@ public class ComicManager : MonoBehaviour
 
         // A wrap-around means the current panel was the last in this loop — advance the loop count.
         bool wrapped = next.Rank <= _currentComicPanel.Rank;
-        if (wrapped && _currentLoopCount < LoopCount.Loop3)
+        if (wrapped && _currentLoopCount < LoopCountBounds.Last)
         {
             _currentLoopCount++;
             // Re-query with the incremented loop count so newly-unlocked panels are included.
             next = PanelSelector.NextPanel(comicPanels, null, _currentLoopCount);
-            if (next == null)
-            {
+            if (next == null)            {
                 Debug.LogWarning("[ComicManager] No eligible panels found after loop increment.", this);
                 return;
             }
