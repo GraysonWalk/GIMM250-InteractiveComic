@@ -82,9 +82,9 @@ Each `AnimatedStep` child needs its own Animator and clip:
 
 **Persists In Final State:** Tick this on any `AnimatedStep` that should remain visible when the player browses history (UI arrows). Only steps that have already been triggered via the advance button will show — steps not yet reached are always hidden regardless of this setting.
 
-**Revisit behaviour:** Use the two flags on `AnimatedStep` to control what happens when the player sees a panel again in a later loop:
+**Revisit behaviour:** Use the two flags on `AnimatedStep` to control what happens when the player sees a panel again in a **later loop** (this does not affect the Replay button — that always replays all steps):
 
-| `Replay On Revisit` | `Hide On Revisit` | What happens on revisit |
+| `Replay On Revisit` | `Hide On Revisit` | What happens on loop revisit |
 |---|---|---|
 | ✅ | — | Full animation replays and blocks input, same as first visit |
 | ☐ | ☐ | Snaps to final frame instantly; appears with no advance press needed |

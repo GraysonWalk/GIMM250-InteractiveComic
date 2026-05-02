@@ -31,9 +31,9 @@ public interface IPanelStep
 
     /// <summary>
     ///     Called by ComicPanel.Replay() before the panel restarts.
-    ///     Steps that should replay (replayOnRevisit = true) reset their visited state here
-    ///     so they block input and animate again. Steps that should not replay (e.g. FocusPoint)
-    ///     leave their state untouched so they remain non-blocking on the next pass.
+    ///     Resets the step so it blocks input and animates again on the next Advance() call.
+    ///     Steps that should preserve state across explicit replays (e.g. FocusPoint showing
+    ///     the previously chosen option) override this in their concrete class.
     /// </summary>
     void PrepareForReplay();
 }
