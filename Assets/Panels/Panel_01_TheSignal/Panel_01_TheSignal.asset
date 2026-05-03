@@ -14,11 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
   firstLoop: 0
   lastLoop: 4
-  hasLeadershipVariant: 0
-  hasPhilosophyVariant: 0
-  hasScienceVariant: 0
   rank: 10
-  requireAdvanceToComplete: 1
+  requireAdvanceToComplete: 0
   replayAnimationOnRevisit: 0
   incomingBlend:
     Style: 1
