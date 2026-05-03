@@ -78,7 +78,9 @@ Each `AnimatedStep` child needs its own Animator and clip:
 3. On the **last keyframe**, add an **Animation Event** → Function: `OnAnimationFinished`
 4. The step blocks input until that event fires, then the next spacebar press is accepted.
 
-**Optional text (dialogue / prose / captions):** Add one or more child GameObjects to the `AnimatedStep` and attach a `PanelText` component to each. The `AnimatedStep`'s Animator controls when each text element appears and disappears via keyframes. Fill in variant text fields on each `PanelText` to show different content based on player focus choices. Leave no `PanelText` children for purely visual steps.
+**Optional focus-variant text:** Add one or more child GameObjects to the `AnimatedStep` and attach a `PanelText` component to each. Fill in variant text fields on each `PanelText` to show different content based on player focus choices. Leave no `PanelText` children for purely visual steps.
+
+**Optional focus-variant sprites:** Add a `SpriteVariant` component to any child `SpriteRenderer` of the `AnimatedStep`. Assign a default sprite and any override sprites for focus choices. Both `PanelText` and `SpriteVariant` implement `IVariantContent` — `AnimatedStep` populates all of them automatically at activation time. To add a new kind of choice-driven content, implement `IVariantContent` on a new component; no changes to `AnimatedStep` are needed.
 
 **Persists In Final State:** Tick this on any `AnimatedStep` that should remain visible when the player browses history (UI arrows). Only steps that have already been triggered via the advance button will show — steps not yet reached are always hidden regardless of this setting.
 
@@ -105,11 +107,52 @@ When a panel is revisited, all non-blocking steps (frozen or hidden) activate in
 |---|---|---|---|
 | `AnimatedStep` | until `OnAnimationFinished` | Via `PanelText` children | Sprite reveals, panel effects, dialogue, prose |
 | `PanelText` | — (not a step) | Yes — focus-variant | Dialogue lines, captions, prose; child of `AnimatedStep`, shown/hidden by its Animator |
+| `SpriteVariant` | — (not a step) | No — focus-variant sprite | Art that changes based on player choices; child of `AnimatedStep`; attach to any `SpriteRenderer` child |
 | `MiniGame` subclass | until `Complete()` or `Fail()` | No | Interactive puzzles embedded in panels |
+| `FocusPoint` | until player clicks a choice | No | Choice prompts that write to `PlayerChoicesSO` |
 
 ---
 
-## Player Focus Choices
+## Setting Up a Focus Point
+
+A `FocusPoint` is a step that prompts the player to choose between two options for a thematic focus category. The choice is recorded in `PlayerChoices.asset` and affects art and text in later panels.
+
+### Hierarchy
+
+```
+ComicPanel_XX_Name
+  └── Step_FocusPoint    ← FocusPoint component here
+        ├── OptionA      ← ClickableOption component; any GameObject type (see below)
+        └── OptionB      ← ClickableOption component; any GameObject type (see below)
+```
+
+The option GameObjects can be anything the EventSystem can hit:
+
+| Click target type | Additional requirements |
+|---|---|
+| **UI Image / Button** | Parent Canvas with `GraphicRaycaster` |
+| **2D world-space sprite** | `Collider2D` on the object; `Physics2DRaycaster` on the camera |
+| **3D world-space mesh** | `Collider` on the object; `PhysicsRaycaster` on the camera |
+
+Visual feedback for the disabled/chosen state is not automatic — drive it via an Animator on the option GameObject (key alpha, scale, or color in the disabled state).
+
+### Inspector setup on FocusPoint:
+| Field | What to assign |
+|---|---|
+| **Category** | `Science`, `Philosophy`, or `Leadership` — which axis this step writes |
+| **Choices** | The shared `PlayerChoices.asset` |
+| **Option A** | A `ClickableOption` component anywhere in the hierarchy |
+| **Option B** | A `ClickableOption` component anywhere in the hierarchy |
+
+### Behaviour
+- **First visit** — presents both buttons as interactive; blocks until the player clicks one.
+- **Loop revisit** (`replayOnRevisit = false` by default) — shows the already-chosen option without re-prompting; auto-chained, no advance press needed.
+- **Replay button** — also shows already-chosen state; `PrepareForReplay()` is a no-op by design.
+- **History arrows** — shown in its chosen state (`ShowInFinalState` is true once a choice is made).
+
+> The unchosen button is set to `interactable = false` (dimmed) in the chosen state. Style the buttons' disabled colour block in the Inspector to match your art direction.
+
+---
 
 Choices are stored in the shared `PlayerChoices.asset` ScriptableObject. All panels read from the same asset, so a choice made in panel 4 is visible in panel 15 with no extra wiring.
 
