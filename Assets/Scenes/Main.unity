@@ -2179,7 +2179,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 322569977075928931, guid: 044002f21b7c94c029fdb2cc10c58768, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1243922724211136722, guid: 044002f21b7c94c029fdb2cc10c58768, type: 3}
       propertyPath: m_IsActive
@@ -2187,7 +2187,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3415586188566031711, guid: 044002f21b7c94c029fdb2cc10c58768, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3810770936919338600, guid: 044002f21b7c94c029fdb2cc10c58768, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 4128901267230522166, guid: 044002f21b7c94c029fdb2cc10c58768, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 4687015525849656010, guid: 044002f21b7c94c029fdb2cc10c58768, type: 3}
       propertyPath: m_Name
@@ -2248,6 +2256,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3415586188566031711, guid: 044002f21b7c94c029fdb2cc10c58768, type: 3}
       insertIndex: -1
       addedObject: {fileID: 190471830}
+    - targetCorrespondingSourceObject: {fileID: 3415586188566031711, guid: 044002f21b7c94c029fdb2cc10c58768, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 2621159705452505202, guid: 044002f21b7c94c029fdb2cc10c58768, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 044002f21b7c94c029fdb2cc10c58768, type: 3}
 --- !u!1001 &1680044295995541621
 PrefabInstance:

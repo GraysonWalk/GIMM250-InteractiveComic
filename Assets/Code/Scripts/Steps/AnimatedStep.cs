@@ -9,7 +9,7 @@ using UnityEngine;
 ///     1. Add a child GameObject under ComicPanel; attach this component + an Animator.
 ///     2. Set the Animator Controller's default state to your clip; disable Loop Time.
 ///     3. On the last keyframe add an Animation Event pointing to OnAnimationFinished().
-///     4. Optionally: add PanelText children and fill in variant text in the Inspector.
+    ///     4. Optionally: add PanelText or SpriteVariant children and fill in variant content in the Inspector.
 ///     5. Tick "Persists In Final State" if this element should remain visible at the panel's end.
 /// </summary>
 [RequireComponent(typeof(Animator))]

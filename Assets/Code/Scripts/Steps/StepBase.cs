@@ -41,8 +41,8 @@ public abstract class StepBase : MonoBehaviour, IPanelStep
 
     public abstract void Activate(PlayerChoicesSO choices);
 
-    /// <summary>Hides this step's GameObject.</summary>
-    public void Deactivate() => gameObject.SetActive(false);
+    /// <summary>Hides this step's GameObject. Override to hide additional objects (e.g. a separate presenter).</summary>
+    public virtual void Deactivate() => gameObject.SetActive(false);
 
     /// <summary>
     ///     Resets this step so it animates and blocks again on the next Advance() call.

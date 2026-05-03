@@ -26,3 +26,6 @@ public static class LoopCountBounds
 public enum ScienceChoice    { None, OptionA, OptionB }
 public enum PhilosophyChoice { None, OptionA, OptionB }
 public enum LeadershipChoice { None, OptionA, OptionB }
+
+/// <summary>Which focus axis a FocusPoint writes to.</summary>
+public enum FocusCategory { Science, Philosophy, Leadership }
