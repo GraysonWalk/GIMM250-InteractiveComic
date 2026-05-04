@@ -14,7 +14,7 @@ public class PanelDataSO : ScriptableObject
     [SerializeField] private LoopCount firstLoop;
     [Tooltip("The last loop this panel appears in. Defaults to Loop3 (always visible). " +
              "Set lower to retire a panel after a specific loop.")]
-    [SerializeField] private LoopCount lastLoop = LoopCount.Loop3;
+    [SerializeField] private LoopCount lastLoop = LoopCountBounds.Last;
     [SerializeField] private int rank;
 
     [Header("Completion")]
