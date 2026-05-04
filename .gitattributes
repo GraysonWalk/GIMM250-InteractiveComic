@@ -112,6 +112,10 @@
 *.unitypackage binary
 *.spriteatlas  binary
 
+# TMP font SDF assets contain binary atlas texture data — must be binary
+# eol=lf on these corrupts the embedded texture, losing the font mesh
+"Assets/TextMesh Pro/Resources/Fonts & Materials/*.asset" binary
+
 # C# source — always text, LF
 *.cs           text eol=lf
 *.json         text eol=lf
