@@ -60,7 +60,7 @@ On the **ComicPanel** root:
 
 > **Animator** is resolved automatically via `GetComponent` — no manual assignment needed. Unity will also prevent it from being accidentally removed (`[RequireComponent]`).
 
-On the **ComicManager** GameObject: drag your new panel into the **Comic Panels** list.
+> **No ComicManager wiring needed.** `ComicManager` discovers all `ComicPanel` components in the scene automatically at startup — just having your panel in the scene hierarchy is enough.
 
 ### 4. Set Up the Intro Animation
 
@@ -103,8 +103,10 @@ When a panel is revisited, all non-blocking steps (frozen or hidden) activate in
 
 | Component | Blocks input? | Has text? | Use for |
 |---|---|---|---|
-| `AnimatedStep` | until `OnAnimationFinished` | Via `PanelText` children | Sprite reveals, panel effects, dialogue, prose |
+| `AnimatedStep` | until `OnAnimationFinished` | Via `PanelText` / `SpriteVariant` children | Sprite reveals, panel effects, dialogue, prose |
 | `PanelText` | — (not a step) | Yes — focus-variant | Dialogue lines, captions, prose; child of `AnimatedStep`, shown/hidden by its Animator |
+| `SpriteVariant` | — (not a step) | No — swaps sprites | Attach to any `SpriteRenderer` child of an `AnimatedStep`; swaps sprite based on player focus choice |
+| `FocusPoint` | until option clicked | No | Presents two clickable options to the player; records choice to `PlayerChoicesSO` |
 | `MiniGame` subclass | until `Complete()` or `Fail()` | No | Interactive puzzles embedded in panels |
 
 ---
@@ -139,15 +141,16 @@ ScriptableObjects          — designer-editable data
   PlayerChoicesSO          — shared state for all three focuses
 
 MonoBehaviours            
-  ComicManager             — panel registry, loop pointer, history navigation
+  ComicManager             — discovers panels automatically; loop pointer, history navigation
   ComicPanel               — Show/Hide/Advance, drives step sequence
   StepBase                 — abstract base for all IPanelStep implementations
-  AnimatedStep             — blocking IPanelStep; populates PanelText children on activate
-  PanelText                — focus-variant text (dialogue/prose/captions); child of AnimatedStep
+  AnimatedStep             — blocking IPanelStep; populates IVariantContent children on activate
+  PanelText                — focus-variant text (dialogue/prose/captions); implements IVariantContent; child of AnimatedStep
+  SpriteVariant            — focus-variant sprite swap; implements IVariantContent; child of AnimatedStep
+  FocusPoint               — blocking IPanelStep; presents two ClickableOption targets; writes choice to PlayerChoicesSO
+  ClickableOption          — IPointerClickHandler wrapper; makes any GameObject (UI, 2D, 3D) clickable via EventSystem
   FrameMask                — syncs SpriteMask size to parent 9-sliced SpriteRenderer
   MiniGame (abstract)      — blocking IPanelStep base; subclass for each puzzle
-  FocusPoint               — stub; not yet implemented (see AGENTS.md)
-  FocusPointPresenter      — stub; mirrors NavigationPresenter for FocusPoint UI
   NavigationController     — input events → ComicManager
   NavigationPresenter      — UI arrows, replay button, advance hint
   TooltipTrigger           — fires static events on pointer enter/exit; attach to any hoverable
@@ -161,6 +164,7 @@ Editor-only
   PanelViewLock            — solo-locks a CinemachineCamera in Game View for editing
 
 Plain C#                  
+  IVariantContent          — interface for focus-driven child content; Populate(PlayerChoicesSO); implemented by PanelText and SpriteVariant
   PanelSelector            — picks next panel by rank + loop eligibility
   CommandHistory           — two-stack undo/redo (Execute/Undo/Redo)
   SwitchCameraCommand      — ICommand; Show/Hide panels, set Cinemachine blend
@@ -169,6 +173,7 @@ Plain C#
 
 ### Key Rules
 - **Camera switching** — enable/disable `CinemachineCamera` components only. Never change priority. One enabled = active; Cinemachine Brain blends automatically.
+- **Panel discovery** — `ComicManager` finds panels automatically via `FindObjectsByType`. Never add a `[SerializeField]` panel list to `ComicManager` — multiple teammates modifying that list causes null slots after merges.
 - **Player choices** — read `PlayerChoicesSO` directly via `[SerializeField]`. No class should reference `ComicManager` just to get choices.
 - **Input** — subscribe to `InputAction.performed` in `OnEnable`, unsubscribe in `OnDisable`. Never poll in `Update`.
 - **Loop bounds** — use `LoopCountBounds.Last` instead of a hardcoded `LoopCount.Loop3`. Add new values to `LoopCount` in `SharedEnums.cs` only.
