@@ -14,6 +14,7 @@ public class ClickManager : MonoBehaviour
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
+            cam = Camera.main;
             Vector2 mousePos = Mouse.current.position.ReadValue();
 
             Ray ray = cam.ScreenPointToRay(mousePos);
