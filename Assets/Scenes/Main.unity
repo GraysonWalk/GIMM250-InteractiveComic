@@ -231,17 +231,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &57578806 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6612157863551287790, guid: 2536b7e5628a44e61a268d15b2ec4eb2, type: 3}
-  m_PrefabInstance: {fileID: 2447351159576099706}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea21de7996be4c74a43af8e831f142c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComicPanel
 --- !u!224 &59118994 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8911290758205776710, guid: 9d3c6870a26bb4280a652a91c2e3d468, type: 3}
@@ -477,7 +466,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.37801, y: -0.8, z: -9.48605}
+  m_LocalPosition: {x: 75.79512, y: 101.909996, z: -1658.4259}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1347,17 +1336,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea21de7996be4c74a43af8e831f142c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComicPanel
---- !u!114 &750885775 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4475408595657885663, guid: 54cba9a02c59d4b41944c61d8ff6ed07, type: 3}
-  m_PrefabInstance: {fileID: 4117505732845202456}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea21de7996be4c74a43af8e831f142c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComicPanel
 --- !u!4 &750885776 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8536220748769280281, guid: 54cba9a02c59d4b41944c61d8ff6ed07, type: 3}
@@ -1831,8 +1809,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1183743333}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1969,17 +1947,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7354973778166892098, guid: 0cb8f0a66e37744cc9141e5ddbed8a66, type: 3}
   m_PrefabInstance: {fileID: 5685690763530784174}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1473639910 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3350531073513488516, guid: 0cb8f0a66e37744cc9141e5ddbed8a66, type: 3}
-  m_PrefabInstance: {fileID: 5685690763530784174}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea21de7996be4c74a43af8e831f142c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComicPanel
 --- !u!1 &1486675792
 GameObject:
   m_ObjectHideFlags: 0
@@ -2017,17 +1984,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7509593895856189186, guid: 35a2054abdd3c458f8f2bada9601cad5, type: 3}
   m_PrefabInstance: {fileID: 7303752043573011074}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1555038052 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2331184763256072644, guid: 35a2054abdd3c458f8f2bada9601cad5, type: 3}
-  m_PrefabInstance: {fileID: 7303752043573011074}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea21de7996be4c74a43af8e831f142c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComicPanel
 --- !u!1 &1594658155
 GameObject:
   m_ObjectHideFlags: 0
@@ -2055,7 +2011,7 @@ Transform:
   m_GameObject: {fileID: 1594658155}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1297, y: 103, z: 5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2074,7 +2030,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ade1360810f645dea104138035e6b46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComicManager
-  comicPanels: []
   brain: {fileID: 330585548}
 --- !u!114 &1594658159
 MonoBehaviour:
@@ -2090,17 +2045,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CursorManager
   defaultCursor: {fileID: 2800000, guid: 73e9e8bb522da4873bccc747ee89ca02, type: 3}
   hotspot: {x: 0, y: 0}
---- !u!114 &1692968244 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6944815359044235304, guid: d7cdfd24046b04aae9177751f577b244, type: 3}
-  m_PrefabInstance: {fileID: 7272988595290234486}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea21de7996be4c74a43af8e831f142c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComicPanel
 --- !u!4 &1741407219 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1418208818056824616, guid: 2536b7e5628a44e61a268d15b2ec4eb2, type: 3}
@@ -2447,17 +2391,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7336299627993600663, guid: 81c862aff6c80486487742ebe58be901, type: 3}
   m_PrefabInstance: {fileID: 8467442298430227800}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2008388724 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3288369111582561361, guid: 81c862aff6c80486487742ebe58be901, type: 3}
-  m_PrefabInstance: {fileID: 8467442298430227800}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea21de7996be4c74a43af8e831f142c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComicPanel
 --- !u!1001 &878670325574475468
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3220,10 +3153,10 @@ SceneRoots:
   - {fileID: 330585546}
   - {fileID: 1967232363}
   - {fileID: 1594658157}
+  - {fileID: 1183743334}
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 1802131839}
   - {fileID: 35695977}
-  - {fileID: 1183743334}
   - {fileID: 1121336481}
   - {fileID: 1486675793}

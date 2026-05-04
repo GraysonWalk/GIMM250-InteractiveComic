@@ -1,0 +1,2 @@
+// This file is no longer used. Delete it in the Unity Editor Project window (right-click → Delete).
+// Global Volume changes are handled directly by FocusPoint via its built-in Volume + VolumeProfile fields.
