@@ -76,10 +76,13 @@ MonoBehaviour:
   m_FreeGlyphRects:
   - m_X: 0
     m_Y: 0
+<<<<<<< HEAD
     m_Width: 1023
     m_Height: 1023
   - m_X: 0
     m_Y: 0
+=======
+>>>>>>> 07b9a637c0d73817dbce5a5420fe3b3668689e3b
     m_Width: 1023
     m_Height: 1023
   m_FontFeatureTable:
