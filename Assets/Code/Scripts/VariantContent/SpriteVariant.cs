@@ -61,22 +61,22 @@ public class SpriteVariant : MonoBehaviour, IVariantContent
         if (choices != null)
         {
             if (choices.ScienceFocus == ScienceChoice.OptionA && scienceOptionASprite != null)
-                { _renderer.sprite = scienceOptionASprite; return; }
+            { _renderer.sprite = scienceOptionASprite; return; }
 
             if (choices.ScienceFocus == ScienceChoice.OptionB && scienceOptionBSprite != null)
-                { _renderer.sprite = scienceOptionBSprite; return; }
+            { _renderer.sprite = scienceOptionBSprite; return; }
 
             if (choices.PhilosophyFocus == PhilosophyChoice.OptionA && philosophyOptionASprite != null)
-                { _renderer.sprite = philosophyOptionASprite; return; }
+            { _renderer.sprite = philosophyOptionASprite; return; }
 
             if (choices.PhilosophyFocus == PhilosophyChoice.OptionB && philosophyOptionBSprite != null)
-                { _renderer.sprite = philosophyOptionBSprite; return; }
+            { _renderer.sprite = philosophyOptionBSprite; return; }
 
             if (choices.LeadershipFocus == LeadershipChoice.OptionA && leadershipOptionASprite != null)
-                { _renderer.sprite = leadershipOptionASprite; return; }
+            { _renderer.sprite = leadershipOptionASprite; return; }
 
             if (choices.LeadershipFocus == LeadershipChoice.OptionB && leadershipOptionBSprite != null)
-                { _renderer.sprite = leadershipOptionBSprite; return; }
+            { _renderer.sprite = leadershipOptionBSprite; return; }
         }
 
         if (defaultSprite != null)

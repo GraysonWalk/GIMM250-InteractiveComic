@@ -56,10 +56,10 @@ public sealed class AnimatedStep : StepBase
 
         if (!skip)
         {
-            // First visit (or replay) — populate text and play the animation from the start.
-            PanelText[] texts = GetComponentsInChildren<PanelText>(true);
-            foreach (PanelText text in texts)
-                text.Populate(choices);
+            // First visit (or replay) — populate all variant content and play the animation from the start.
+            IVariantContent[] variants = GetComponentsInChildren<IVariantContent>(true);
+            foreach (IVariantContent variant in variants)
+                variant.Populate(choices);
 
             gameObject.SetActive(true);
             SeekAnimator(0f);
