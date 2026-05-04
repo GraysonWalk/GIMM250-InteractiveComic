@@ -6,44 +6,25 @@ for tooltips and custom cursors.
 
 ---
 
-## Git Setup (do this once per machine)
+## Git Setup
 
-### 1. Set up UnityYAMLMerge
+No per-machine configuration is required. The `.gitattributes` file in the repo root handles binary assets automatically when you pull.
 
-UnityYAMLMerge is a smart merge tool bundled with Unity that resolves conflicts in `.unity`, `.prefab`, and `.asset` files far more accurately than git's default text merger. Without it, any two teammates editing the same scene or prefab will produce messy conflicts. With it, most conflicts resolve automatically.
+### What .gitattributes does
 
-Run these two commands once (adjust the Unity version path if yours is different):
+| File type | Behaviour |
+|---|---|
+| Font `.ttf`, `.otf`, `.fnt`, TMP `.asset` atlases | Marked `binary` — git never attempts a text merge; no font conflicts possible |
+| Textures, audio, models, compiled files | Marked `binary` — no merge conflicts |
+| `.unity`, `.prefab`, `.asset`, `.anim`, `.controller` | Standard text merge with LF line endings — resolve conflicts manually in Rider or a text editor |
+| `.cs`, `.json`, `.md` | Normal text merge with LF line endings |
 
-**macOS:**
-```bash
-git config --global merge.unityyamlmerge.name "Unity SmartMerge"
-git config --global merge.unityyamlmerge.driver '"/Applications/Unity/Hub/Editor/6000.0.0f1/Unity.app/Contents/Tools/UnityYAMLMerge" merge -p "%O" "%B" "%A" "%A"'
-```
+### Tips for reducing scene conflicts
 
-**Windows:**
-```bash
-git config --global merge.unityyamlmerge.name "Unity SmartMerge"
-git config --global merge.unityyamlmerge.driver '"C:/Program Files/Unity/Hub/Editor/6000.0.0f1/Editor/Data/Tools/UnityYAMLMerge.exe" merge -p "%O" "%B" "%A" "%A"'
-```
-
-> Replace `6000.0.0f1` with the exact version folder name from your Unity Hub install location.
-
-### 2. Verify .gitattributes is working
-
-After pulling the repo (it now includes `.gitattributes`), run:
-```bash
-git check-attr merge Assets/Scenes/Main.unity
-```
-Expected output: `Assets/Scenes/Main.unity: merge: unityyamlmerge`
-
-### Why this matters
-
-| File type | Without .gitattributes | With .gitattributes |
-|---|---|---|
-| Font `.ttf`, `.otf`, `.fnt` | Git tries to text-merge → corrupt binary | Marked `binary` — git takes one side; no conflict |
-| TMP `.asset` atlas | Text diff of binary GUID soup → conflict | Marked `binary` — no conflict |
-| `.unity` / `.prefab` | Text conflicts, hard to resolve | Routed through UnityYAMLMerge — auto-resolved |
-| `.png`, `.wav`, etc. | Git tries to diff binary → conflict | Marked `binary` — no conflict |
+- **Pull before you start a session** — always pull the latest before editing the scene.
+- **Push scene changes quickly** — the longer a scene edit sits uncommitted, the more likely a conflict.
+- **Commit scene changes separately** from code changes — smaller, focused commits are easier to merge.
+- **When resolving a `Main.unity` conflict** — open the conflict in Rider's merge tool; each Unity object has a unique `fileID` anchor, so it's usually clear which block belongs to which teammate.
 
 ---
 
