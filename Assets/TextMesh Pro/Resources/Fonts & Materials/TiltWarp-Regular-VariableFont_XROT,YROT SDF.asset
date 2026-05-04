@@ -169,6 +169,16 @@ MonoBehaviour:
     m_Width: 35
     m_Height: 10
   - m_X: 0
+<<<<<<< HEAD
+    m_Y: 0
+<<<<<<< HEAD
+    m_Width: 1023
+    m_Height: 1023
+  - m_X: 0
+    m_Y: 0
+=======
+>>>>>>> 07b9a637c0d73817dbce5a5420fe3b3668689e3b
+=======
     m_Y: 178
     m_Width: 56
     m_Height: 9
@@ -246,6 +256,7 @@ MonoBehaviour:
     m_Height: 667
   - m_X: 0
     m_Y: 505
+>>>>>>> 5ee4a597f6e92913f022397571d8aec5d978a2b2
     m_Width: 1023
     m_Height: 518
   - m_X: 63
