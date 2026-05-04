@@ -6,6 +6,47 @@ for tooltips and custom cursors.
 
 ---
 
+## Git Setup (do this once per machine)
+
+### 1. Set up UnityYAMLMerge
+
+UnityYAMLMerge is a smart merge tool bundled with Unity that resolves conflicts in `.unity`, `.prefab`, and `.asset` files far more accurately than git's default text merger. Without it, any two teammates editing the same scene or prefab will produce messy conflicts. With it, most conflicts resolve automatically.
+
+Run these two commands once (adjust the Unity version path if yours is different):
+
+**macOS:**
+```bash
+git config --global merge.unityyamlmerge.name "Unity SmartMerge"
+git config --global merge.unityyamlmerge.driver '"/Applications/Unity/Hub/Editor/6000.0.0f1/Unity.app/Contents/Tools/UnityYAMLMerge" merge -p "%O" "%B" "%A" "%A"'
+```
+
+**Windows:**
+```bash
+git config --global merge.unityyamlmerge.name "Unity SmartMerge"
+git config --global merge.unityyamlmerge.driver '"C:/Program Files/Unity/Hub/Editor/6000.0.0f1/Editor/Data/Tools/UnityYAMLMerge.exe" merge -p "%O" "%B" "%A" "%A"'
+```
+
+> Replace `6000.0.0f1` with the exact version folder name from your Unity Hub install location.
+
+### 2. Verify .gitattributes is working
+
+After pulling the repo (it now includes `.gitattributes`), run:
+```bash
+git check-attr merge Assets/Scenes/Main.unity
+```
+Expected output: `Assets/Scenes/Main.unity: merge: unityyamlmerge`
+
+### Why this matters
+
+| File type | Without .gitattributes | With .gitattributes |
+|---|---|---|
+| Font `.ttf`, `.otf`, `.fnt` | Git tries to text-merge → corrupt binary | Marked `binary` — git takes one side; no conflict |
+| TMP `.asset` atlas | Text diff of binary GUID soup → conflict | Marked `binary` — no conflict |
+| `.unity` / `.prefab` | Text conflicts, hard to resolve | Routed through UnityYAMLMerge — auto-resolved |
+| `.png`, `.wav`, etc. | Git tries to diff binary → conflict | Marked `binary` — no conflict |
+
+---
+
 ## Documentation References
 
 | Resource | Version | URL                                                                                 |
@@ -18,6 +59,35 @@ for tooltips and custom cursors.
 | Cinemachine Scripting API | 3.1.6   | https://docs.unity3d.com/Packages/com.unity.cinemachine@3.1/api/                    |
 | Input System Manual | 1.11.0  | https://docs.unity3d.com/Packages/com.unity.inputsystem@1.11/manual/                |
 | Input System Scripting API | 1.11.0  | https://docs.unity3d.com/Packages/com.unity.inputsystem@1.11/api/                   |
+
+---
+
+## Title Screen
+
+The title screen lives in the same scene as the comic. A dedicated `CinemachineCamera` frames the title art; when the player presses Start, the camera blends to Panel 1.
+
+### Scene setup
+
+1. Add a `CinemachineCamera` to the scene positioned to show the title art — leave it **enabled** (it's the blend origin)
+2. Add a UI Canvas with your title art and a `Button`
+3. Add `TitleScreenController` to any persistent GameObject (e.g. the same one as `ComicManager`)
+
+### Inspector wiring
+
+| Field | What to assign |
+|---|---|
+| **Comic Manager** | The `ComicManager` in the scene |
+| **Title Camera** | The `CinemachineCamera` used for the title view |
+| **Title UI** | The root Canvas or panel GameObject to hide on start |
+| **Start Button** | The `Button` the player clicks |
+
+### Camera transition
+
+The tilt-down from title to Panel 1 is controlled by **Panel 1's `IncomingBlend`** on its `PanelDataSO`:
+- `EaseInOut 2s` → smooth cinematic tilt down
+- `Cut` → instant jump (use this if testing without a title camera)
+
+No code changes needed — it's pure data. Set it in the Inspector on Panel 1's `PanelDataSO` asset.
 
 ---
 
@@ -218,7 +288,7 @@ MonoBehaviours
   TooltipDisplay           — subscribes to TooltipTrigger; positions + fades tooltip panel
   CursorTrigger            — changes OS cursor on hover; restores default on exit
   CursorManager            — sets default cursor on startup; exposes static ApplyDefault()
-  TitleScreenController    — stub; title screen UI + scene transition
+  TitleScreenController    — title screen UI + start button; calls ComicManager.StartComic() on click
   EndScreenController      — stub; end screen UI + restart/quit
 
 Editor-only

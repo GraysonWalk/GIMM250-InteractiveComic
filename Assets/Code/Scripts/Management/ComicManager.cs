@@ -61,9 +61,16 @@ public class ComicManager : MonoBehaviour
 
         if (_comicPanels.Length == 0)
             Debug.LogError("[ComicManager] No ComicPanel components found in the scene.", this);
+    }
 
-        // Subscribe to and show the first eligible panel — the only manual subscription needed.
-        // All subsequent panels are subscribed to via SwitchToPanel() as the comic advances.
+    /// <summary>
+    ///     Starts the comic from the first eligible panel.
+    ///     Called by TitleScreenController when the player presses the start button.
+    ///     Panel 1's IncomingBlend (set on its PanelDataSO) controls the camera transition
+    ///     from the title camera — set it to EaseInOut for a cinematic tilt-down, or Cut for an instant jump.
+    /// </summary>
+    public void StartComic()
+    {
         IComicPanel first = PanelSelector.NextPanel(_comicPanels, null, _currentLoopCount);
         if (first != null)
             SwitchToPanel(first);
@@ -212,11 +219,10 @@ public class ComicManager : MonoBehaviour
         IComicPanel prev = _currentComicPanel;
         RewireCurrentPanel(next);
 
-        // First launch always cuts so the main camera doesn't travel through empty space.
-        // All subsequent transitions use the target panel's configured incoming blend.
-        CinemachineBlendDefinition blend = prev == null
-            ? new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0f)
-            : next.IncomingBlend;
+        // Always use the target panel's configured incoming blend.
+        // On first launch this blends from the title camera's position — set Panel 1's IncomingBlend
+        // to EaseInOut for a cinematic tilt-down, or Cut if no title camera is present.
+        CinemachineBlendDefinition blend = next.IncomingBlend;
 
         // Capture whether this panel was already seen BEFORE Show() runs —
         // Show() sets HasBeenVisited = true on first visit, so we must read it first.
