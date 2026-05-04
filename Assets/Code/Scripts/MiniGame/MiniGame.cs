@@ -14,12 +14,14 @@ using UnityEngine.Events;
 ///     2. Override StartGame() to set up your game logic.
 ///     3. Call Complete() when the player wins, or Fail() when the player loses.
 /// </summary>
-public abstract class MiniGame : StepBase, IMiniGame
+public class MiniGame : StepBase, IMiniGame
 {
     #region Variables
 
     public UnityEvent OnGameComplete { get; } = new();
     public UnityEvent OnGameFailed   { get; } = new();
+    
+    [SerializeField] GameObject game;
 
     // Minigames are interactive — they never persist as static display elements in the final state.
     public override bool ShowInFinalState => false;
@@ -38,13 +40,18 @@ public abstract class MiniGame : StepBase, IMiniGame
     }
 
     /// <summary>Override to set up game state, spawn objects, start timers, etc.</summary>
-    public abstract void StartGame();
+    public void StartGame()
+    {
+    }
+
+
+
 
     /// <summary>Called internally when the game ends. Fires OnStepComplete to unblock the panel.</summary>
     public virtual void EndGame()
     {
-        gameObject.SetActive(false);
         OnStepComplete.Invoke();
+        gameObject.SetActive(false);
     }
 
     /// <summary>Call this from your subclass when the player successfully completes the minigame.</summary>

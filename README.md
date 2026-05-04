@@ -60,7 +60,7 @@ On the **ComicPanel** root:
 
 > **Animator** is resolved automatically via `GetComponent` — no manual assignment needed. Unity will also prevent it from being accidentally removed (`[RequireComponent]`).
 
-On the **ComicManager** GameObject: drag your new panel into the **Comic Panels** list.
+> **No ComicManager wiring needed.** `ComicManager` discovers all `ComicPanel` components in the scene automatically at startup — just having your panel in the scene hierarchy is enough.
 
 ### 4. Set Up the Intro Animation
 
@@ -99,12 +99,74 @@ When a panel is revisited, all non-blocking steps (frozen or hidden) activate in
 
 ---
 
+## FocusPoint Setup
+
+A `FocusPoint` step blocks the advance button until the player clicks one of two option objects.
+
+### Scene hierarchy
+
+```
+ComicPanel_XX_Name
+  └── Step_FocusPoint          ← FocusPoint component (StepBase); starts inactive
+        ├── OptionA             ← any 3D GameObject; Collider + Clickable components
+        ├── OptionB             ← any 3D GameObject; Collider + Clickable components
+        └── PostProcessVariant  ← optional; swaps a global Volume profile at decision time
+```
+
+### Inspector wiring
+
+On the **FocusPoint** component:
+
+| Field | What to assign |
+|---|---|
+| **Category** | Science / Philosophy / Leadership — which choice axis this step records |
+| **Choices** | The shared `PlayerChoices.asset` |
+| **Option A** | The `Clickable` component on the Option A object |
+| **Option B** | The `Clickable` component on the Option B object |
+
+On each **Clickable** component's `onClick` UnityEvent:
+
+| Option | Listener | Argument |
+|---|---|---|
+| Option A's `Clickable` | `FocusPoint → RecordChoice` | ☑ **(true)** |
+| Option B's `Clickable` | `FocusPoint → RecordChoice` | ☐ **(false)** |
+
+### Scene requirements
+
+A **`ClickManager`** component must be present somewhere in the scene (e.g. on the same GameObject as `ComicManager`). It routes `Physics.Raycast` hits to `Clickable.Click()`.
+
+> **3D Colliders required.** `ClickManager` uses `Physics.Raycast` — option objects must have a 3D `Collider` component. UI and 2D sprite objects are not supported.
+
+### Global Volume change (optional)
+
+To change the comic's post-process look at the moment the player decides — and keep that look for all subsequent panels — fill in the **Global Volume Change** fields on the `FocusPoint` component:
+
+| Field | What to assign |
+|---|---|
+| **Global Volume** | The scene `Volume` component to update (typically a global URP volume) |
+| **Option A Profile** | `VolumeProfile` applied when the player picks Option A |
+| **Option B Profile** | `VolumeProfile` applied when the player picks Option B |
+
+The profile is swapped immediately when `RecordChoice()` fires and re-applied on revisit so history browsing reflects the player's choice. Leave **Global Volume** empty for panels with no post-process change.
+
+### Revisit behaviour
+
+On loop revisit or after the Replay button, `FocusPoint` shows the already-chosen state rather than re-presenting the choice. The chosen option's `Clickable` stays enabled; the unchosen option is disabled. Any `IVariantContent` children (e.g. `PostProcessVariant`) are re-populated on revisit so persistent effects are restored correctly when browsing history. `PrepareForReplay()` is a no-op — choices persist.
+
+### Persistent global Volume change
+
+To change the comic's post-process look at the moment the player makes a focus decision — and keep that look for all subsequent panels — add a `PostProcessVariant` child to the `FocusPoint` step and assign the global scene `Volume`. The choice is written to `PlayerChoicesSO` first, then `PostProcessVariant.Populate()` is called immediately, swapping the profile. Because the profile change is applied directly to the `Volume` component it persists until something else changes it.
+
+---
+
 ## Step Types
 
 | Component | Blocks input? | Has text? | Use for |
 |---|---|---|---|
-| `AnimatedStep` | until `OnAnimationFinished` | Via `PanelText` children | Sprite reveals, panel effects, dialogue, prose |
+| `AnimatedStep` | until `OnAnimationFinished` | Via `PanelText` / `SpriteVariant` children | Sprite reveals, panel effects, dialogue, prose |
 | `PanelText` | — (not a step) | Yes — focus-variant | Dialogue lines, captions, prose; child of `AnimatedStep`, shown/hidden by its Animator |
+| `SpriteVariant` | — (not a step) | No — swaps sprites | Attach to any `SpriteRenderer` child of an `AnimatedStep`; swaps sprite based on player focus choice |
+| `FocusPoint` | until option clicked | No | Presents two `Clickable` options; records choice to `PlayerChoicesSO`; optionally swaps a global `VolumeProfile` at decision time |
 | `MiniGame` subclass | until `Complete()` or `Fail()` | No | Interactive puzzles embedded in panels |
 
 ---
@@ -139,15 +201,17 @@ ScriptableObjects          — designer-editable data
   PlayerChoicesSO          — shared state for all three focuses
 
 MonoBehaviours            
-  ComicManager             — panel registry, loop pointer, history navigation
+  ComicManager             — discovers panels automatically; loop pointer, history navigation
   ComicPanel               — Show/Hide/Advance, drives step sequence
   StepBase                 — abstract base for all IPanelStep implementations
-  AnimatedStep             — blocking IPanelStep; populates PanelText children on activate
-  PanelText                — focus-variant text (dialogue/prose/captions); child of AnimatedStep
+  AnimatedStep             — blocking IPanelStep; populates IVariantContent children on activate
+  PanelText                — focus-variant text (dialogue/prose/captions); implements IVariantContent; child of AnimatedStep
+  SpriteVariant            — focus-variant sprite swap; implements IVariantContent; child of AnimatedStep
+  FocusPoint               — blocking IPanelStep; holds two Clickable refs; RecordChoice() wired via Inspector UnityEvent; writes choice to PlayerChoicesSO; optionally swaps a global VolumeProfile at decision time
+  Clickable                — click target; exposes UnityEvent onClick (wired in Inspector); invoked by ClickManager via Physics.Raycast; requires 3D Collider
+  ClickManager             — routes Physics.Raycast hits to Clickable.Click(); must be present in any scene using FocusPoint or mini-games
   FrameMask                — syncs SpriteMask size to parent 9-sliced SpriteRenderer
   MiniGame (abstract)      — blocking IPanelStep base; subclass for each puzzle
-  FocusPoint               — stub; not yet implemented (see AGENTS.md)
-  FocusPointPresenter      — stub; mirrors NavigationPresenter for FocusPoint UI
   NavigationController     — input events → ComicManager
   NavigationPresenter      — UI arrows, replay button, advance hint
   TooltipTrigger           — fires static events on pointer enter/exit; attach to any hoverable
@@ -161,6 +225,7 @@ Editor-only
   PanelViewLock            — solo-locks a CinemachineCamera in Game View for editing
 
 Plain C#                  
+  IVariantContent          — interface for focus-driven child content; Populate(PlayerChoicesSO); implemented by PanelText and SpriteVariant
   PanelSelector            — picks next panel by rank + loop eligibility
   CommandHistory           — two-stack undo/redo (Execute/Undo/Redo)
   SwitchCameraCommand      — ICommand; Show/Hide panels, set Cinemachine blend
@@ -169,8 +234,9 @@ Plain C#
 
 ### Key Rules
 - **Camera switching** — enable/disable `CinemachineCamera` components only. Never change priority. One enabled = active; Cinemachine Brain blends automatically.
+- **Panel discovery** — `ComicManager` finds panels automatically via `FindObjectsByType`. Never add a `[SerializeField]` panel list to `ComicManager` — multiple teammates modifying that list causes null slots after merges.
 - **Player choices** — read `PlayerChoicesSO` directly via `[SerializeField]`. No class should reference `ComicManager` just to get choices.
-- **Input** — subscribe to `InputAction.performed` in `OnEnable`, unsubscribe in `OnDisable`. Never poll in `Update`.
+- **Input** — subscribe to `InputAction.performed` in `OnEnable`, unsubscribe in `OnDisable`. Never poll in `Update`. Exception: `ClickManager` uses `Physics.Raycast` in `Update()` for 3D click targets.
 - **Loop bounds** — use `LoopCountBounds.Last` instead of a hardcoded `LoopCount.Loop3`. Add new values to `LoopCount` in `SharedEnums.cs` only.
 
 ---

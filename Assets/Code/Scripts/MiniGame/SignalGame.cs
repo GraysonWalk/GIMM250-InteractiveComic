@@ -5,8 +5,8 @@
 /// TODO: Implement Signal minigame
 public class SignalGame : MiniGame
 {
-    public override void StartGame()
-    {
-        // TODO: Implement signal minigame start
-    }
+    //public override void StartGame()
+    //{
+    //    // TODO: Implement signal minigame start
+    //}
 }
