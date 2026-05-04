@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
@@ -11,7 +10,11 @@ public class ComicManager : MonoBehaviour
 {
     #region Variables
 
-    [SerializeField] private List<ComicPanel> comicPanels;
+    // comicPanels is populated automatically in Start() via FindObjectsByType —
+    // do NOT add a [SerializeField] list. Manual Inspector wiring causes null slots
+    // after merges because multiple teammates modify the same list in Main.unity.
+    private IComicPanel[] _comicPanels;
+
     [SerializeField] private CinemachineBrain brain;
 
     private IComicPanel _currentComicPanel;
@@ -48,9 +51,20 @@ public class ComicManager : MonoBehaviour
 
     private void Start()
     {
+        // Discover all ComicPanel components in the scene automatically.
+        // Panels register themselves by being present in the scene hierarchy — no Inspector wiring needed.
+        // This avoids null slots caused by merge conflicts when teammates each add panels to Main.unity.
+        ComicPanel[] found = FindObjectsByType<ComicPanel>(FindObjectsSortMode.None);
+        _comicPanels = new IComicPanel[found.Length];
+        for (int i = 0; i < found.Length; i++)
+            _comicPanels[i] = found[i];
+
+        if (_comicPanels.Length == 0)
+            Debug.LogError("[ComicManager] No ComicPanel components found in the scene.", this);
+
         // Subscribe to and show the first eligible panel — the only manual subscription needed.
         // All subsequent panels are subscribed to via SwitchToPanel() as the comic advances.
-        IComicPanel first = PanelSelector.NextPanel(comicPanels, null, _currentLoopCount);
+        IComicPanel first = PanelSelector.NextPanel(_comicPanels, null, _currentLoopCount);
         if (first != null)
             SwitchToPanel(first);
         else
@@ -220,7 +234,7 @@ public class ComicManager : MonoBehaviour
     /// </summary>
     private void MoveToNextPanel()
     {
-        IComicPanel next = PanelSelector.NextPanel(comicPanels, _currentComicPanel, _currentLoopCount);
+        IComicPanel next = PanelSelector.NextPanel(_comicPanels, _currentComicPanel, _currentLoopCount);
 
         if (next == null)
         {
@@ -234,7 +248,7 @@ public class ComicManager : MonoBehaviour
         {
             _currentLoopCount++;
             // Re-query with the incremented loop count so newly-unlocked panels are included.
-            next = PanelSelector.NextPanel(comicPanels, null, _currentLoopCount);
+            next = PanelSelector.NextPanel(_comicPanels, null, _currentLoopCount);
             if (next == null)            {
                 Debug.LogWarning("[ComicManager] No eligible panels found after loop increment.", this);
                 return;

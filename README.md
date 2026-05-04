@@ -60,7 +60,7 @@ On the **ComicPanel** root:
 
 > **Animator** is resolved automatically via `GetComponent` — no manual assignment needed. Unity will also prevent it from being accidentally removed (`[RequireComponent]`).
 
-On the **ComicManager** GameObject: drag your new panel into the **Comic Panels** list.
+> **No ComicManager wiring needed.** `ComicManager` discovers all `ComicPanel` components in the scene automatically at startup — just having your panel in the scene hierarchy is enough.
 
 ### 4. Set Up the Intro Animation
 
@@ -78,9 +78,7 @@ Each `AnimatedStep` child needs its own Animator and clip:
 3. On the **last keyframe**, add an **Animation Event** → Function: `OnAnimationFinished`
 4. The step blocks input until that event fires, then the next spacebar press is accepted.
 
-**Optional focus-variant text:** Add one or more child GameObjects to the `AnimatedStep` and attach a `PanelText` component to each. Fill in variant text fields on each `PanelText` to show different content based on player focus choices. Leave no `PanelText` children for purely visual steps.
-
-**Optional focus-variant sprites:** Add a `SpriteVariant` component to any child `SpriteRenderer` of the `AnimatedStep`. Assign a default sprite and any override sprites for focus choices. Both `PanelText` and `SpriteVariant` implement `IVariantContent` — `AnimatedStep` populates all of them automatically at activation time. To add a new kind of choice-driven content, implement `IVariantContent` on a new component; no changes to `AnimatedStep` are needed.
+**Optional text (dialogue / prose / captions):** Add one or more child GameObjects to the `AnimatedStep` and attach a `PanelText` component to each. The `AnimatedStep`'s Animator controls when each text element appears and disappears via keyframes. Fill in variant text fields on each `PanelText` to show different content based on player focus choices. Leave no `PanelText` children for purely visual steps.
 
 **Persists In Final State:** Tick this on any `AnimatedStep` that should remain visible when the player browses history (UI arrows). Only steps that have already been triggered via the advance button will show — steps not yet reached are always hidden regardless of this setting.
 
@@ -105,54 +103,15 @@ When a panel is revisited, all non-blocking steps (frozen or hidden) activate in
 
 | Component | Blocks input? | Has text? | Use for |
 |---|---|---|---|
-| `AnimatedStep` | until `OnAnimationFinished` | Via `PanelText` children | Sprite reveals, panel effects, dialogue, prose |
+| `AnimatedStep` | until `OnAnimationFinished` | Via `PanelText` / `SpriteVariant` children | Sprite reveals, panel effects, dialogue, prose |
 | `PanelText` | — (not a step) | Yes — focus-variant | Dialogue lines, captions, prose; child of `AnimatedStep`, shown/hidden by its Animator |
-| `SpriteVariant` | — (not a step) | No — focus-variant sprite | Art that changes based on player choices; child of `AnimatedStep`; attach to any `SpriteRenderer` child |
+| `SpriteVariant` | — (not a step) | No — swaps sprites | Attach to any `SpriteRenderer` child of an `AnimatedStep`; swaps sprite based on player focus choice |
+| `FocusPoint` | until option clicked | No | Presents two clickable options to the player; records choice to `PlayerChoicesSO` |
 | `MiniGame` subclass | until `Complete()` or `Fail()` | No | Interactive puzzles embedded in panels |
-| `FocusPoint` | until player clicks a choice | No | Choice prompts that write to `PlayerChoicesSO` |
 
 ---
 
-## Setting Up a Focus Point
-
-A `FocusPoint` is a step that prompts the player to choose between two options for a thematic focus category. The choice is recorded in `PlayerChoices.asset` and affects art and text in later panels.
-
-### Hierarchy
-
-```
-ComicPanel_XX_Name
-  └── Step_FocusPoint    ← FocusPoint component here
-        ├── OptionA      ← ClickableOption component; any GameObject type (see below)
-        └── OptionB      ← ClickableOption component; any GameObject type (see below)
-```
-
-The option GameObjects can be anything the EventSystem can hit:
-
-| Click target type | Additional requirements |
-|---|---|
-| **UI Image / Button** | Parent Canvas with `GraphicRaycaster` |
-| **2D world-space sprite** | `Collider2D` on the object; `Physics2DRaycaster` on the camera |
-| **3D world-space mesh** | `Collider` on the object; `PhysicsRaycaster` on the camera |
-
-Visual feedback for the disabled/chosen state is not automatic — drive it via an Animator on the option GameObject (key alpha, scale, or color in the disabled state).
-
-### Inspector setup on FocusPoint:
-| Field | What to assign |
-|---|---|
-| **Category** | `Science`, `Philosophy`, or `Leadership` — which axis this step writes |
-| **Choices** | The shared `PlayerChoices.asset` |
-| **Option A** | A `ClickableOption` component anywhere in the hierarchy |
-| **Option B** | A `ClickableOption` component anywhere in the hierarchy |
-
-### Behaviour
-- **First visit** — presents both buttons as interactive; blocks until the player clicks one.
-- **Loop revisit** (`replayOnRevisit = false` by default) — shows the already-chosen option without re-prompting; auto-chained, no advance press needed.
-- **Replay button** — also shows already-chosen state; `PrepareForReplay()` is a no-op by design.
-- **History arrows** — shown in its chosen state (`ShowInFinalState` is true once a choice is made).
-
-> The unchosen button is set to `interactable = false` (dimmed) in the chosen state. Style the buttons' disabled colour block in the Inspector to match your art direction.
-
----
+## Player Focus Choices
 
 Choices are stored in the shared `PlayerChoices.asset` ScriptableObject. All panels read from the same asset, so a choice made in panel 4 is visible in panel 15 with no extra wiring.
 
@@ -182,15 +141,16 @@ ScriptableObjects          — designer-editable data
   PlayerChoicesSO          — shared state for all three focuses
 
 MonoBehaviours            
-  ComicManager             — panel registry, loop pointer, history navigation
+  ComicManager             — discovers panels automatically; loop pointer, history navigation
   ComicPanel               — Show/Hide/Advance, drives step sequence
   StepBase                 — abstract base for all IPanelStep implementations
-  AnimatedStep             — blocking IPanelStep; populates PanelText children on activate
-  PanelText                — focus-variant text (dialogue/prose/captions); child of AnimatedStep
+  AnimatedStep             — blocking IPanelStep; populates IVariantContent children on activate
+  PanelText                — focus-variant text (dialogue/prose/captions); implements IVariantContent; child of AnimatedStep
+  SpriteVariant            — focus-variant sprite swap; implements IVariantContent; child of AnimatedStep
+  FocusPoint               — blocking IPanelStep; presents two ClickableOption targets; writes choice to PlayerChoicesSO
+  ClickableOption          — IPointerClickHandler wrapper; makes any GameObject (UI, 2D, 3D) clickable via EventSystem
   FrameMask                — syncs SpriteMask size to parent 9-sliced SpriteRenderer
   MiniGame (abstract)      — blocking IPanelStep base; subclass for each puzzle
-  FocusPoint               — stub; not yet implemented (see AGENTS.md)
-  FocusPointPresenter      — stub; mirrors NavigationPresenter for FocusPoint UI
   NavigationController     — input events → ComicManager
   NavigationPresenter      — UI arrows, replay button, advance hint
   TooltipTrigger           — fires static events on pointer enter/exit; attach to any hoverable
@@ -204,6 +164,7 @@ Editor-only
   PanelViewLock            — solo-locks a CinemachineCamera in Game View for editing
 
 Plain C#                  
+  IVariantContent          — interface for focus-driven child content; Populate(PlayerChoicesSO); implemented by PanelText and SpriteVariant
   PanelSelector            — picks next panel by rank + loop eligibility
   CommandHistory           — two-stack undo/redo (Execute/Undo/Redo)
   SwitchCameraCommand      — ICommand; Show/Hide panels, set Cinemachine blend
@@ -212,6 +173,7 @@ Plain C#
 
 ### Key Rules
 - **Camera switching** — enable/disable `CinemachineCamera` components only. Never change priority. One enabled = active; Cinemachine Brain blends automatically.
+- **Panel discovery** — `ComicManager` finds panels automatically via `FindObjectsByType`. Never add a `[SerializeField]` panel list to `ComicManager` — multiple teammates modifying that list causes null slots after merges.
 - **Player choices** — read `PlayerChoicesSO` directly via `[SerializeField]`. No class should reference `ComicManager` just to get choices.
 - **Input** — subscribe to `InputAction.performed` in `OnEnable`, unsubscribe in `OnDisable`. Never poll in `Update`.
 - **Loop bounds** — use `LoopCountBounds.Last` instead of a hardcoded `LoopCount.Loop3`. Add new values to `LoopCount` in `SharedEnums.cs` only.
