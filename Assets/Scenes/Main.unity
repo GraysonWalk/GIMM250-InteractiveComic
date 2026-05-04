@@ -1775,17 +1775,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ade1360810f645dea104138035e6b46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComicManager
-  comicPanels:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 1473639910}
-  - {fileID: 2008388724}
-  - {fileID: 1692968244}
-  - {fileID: 57578806}
-  - {fileID: 750885775}
-  - {fileID: 1555038052}
-  - {fileID: 0}
+  comicPanels: []
   brain: {fileID: 330585548}
 --- !u!114 &1594658159
 MonoBehaviour:
