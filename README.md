@@ -189,19 +189,18 @@ A **`ClickManager`** component must be present somewhere in the scene (e.g. on t
 
 ### Global Volume change (optional)
 
-To change the comic's post-process look at the moment the player decides — and keep that look for all subsequent panels — fill in the **Global Volume Change** fields on the `FocusPoint` component:
+To change the comic's post-process look at the moment the player decides — and keep that look for the rest of the program, layered on top of any other FocusPoints' contributions — wire up two scene `Volume` components on the `FocusPoint` component:
 
 | Field | What to assign |
 |---|---|
-| **Global Volume** | The scene `Volume` component to update (typically a global URP volume) |
-| **Option A Profile** | `VolumeProfile` applied when the player picks Option A |
-| **Option B Profile** | `VolumeProfile` applied when the player picks Option B |
+| **Option A Volume** | A scene `Volume` (typically a global URP volume) with its profile pre-assigned. Leave the component disabled in the Inspector. |
+| **Option B Volume** | A scene `Volume` with its profile pre-assigned. Leave the component disabled in the Inspector. |
 
-The profile is swapped immediately when `RecordChoice()` fires and re-applied on revisit so history browsing reflects the player's choice. Leave **Global Volume** empty for panels with no post-process change.
+When `RecordChoice()` fires the matching `Volume` is enabled and stays enabled for the rest of the program — its post-processing layers onto the comic alongside any volumes activated by other FocusPoints, blending via Unity's Volume Framework (priority/weight). On revisit the chosen `Volume` is re-enabled so history browsing reflects the player's choice. Leave both fields empty for panels with no post-process change.
 
 ### Revisit behaviour
 
-On loop revisit or after the Replay button, `FocusPoint` shows the already-chosen state rather than re-presenting the choice. The chosen option's `Clickable` stays enabled; the unchosen option is disabled. If a Global Volume profile was assigned, it is re-applied on revisit so history browsing reflects the player's choice. `PrepareForReplay()` is a no-op — choices persist.
+On loop revisit or after the Replay button, `FocusPoint` shows the already-chosen state rather than re-presenting the choice. The chosen option's `Clickable` stays enabled; the unchosen option is disabled. If volumes were assigned, the chosen `Volume` is re-enabled on revisit so history browsing reflects the player's choice. `PrepareForReplay()` is a no-op — choices persist.
 
 ---
 
@@ -212,7 +211,7 @@ On loop revisit or after the Replay button, `FocusPoint` shows the already-chose
 | `AnimatedStep` | until `OnAnimationFinished` | Via `PanelText` / `SpriteVariant` children | Sprite reveals, panel effects, dialogue, prose |
 | `PanelText` | — (not a step) | Yes — focus-variant | Dialogue lines, captions, prose; child of `AnimatedStep`, shown/hidden by its Animator |
 | `SpriteVariant` | — (not a step) | No — swaps sprites | Attach to any `SpriteRenderer` child of an `AnimatedStep`; swaps sprite based on player focus choice |
-| `FocusPoint` | until option clicked | No | Presents two `Clickable` options; records choice to `PlayerChoicesSO`; optionally swaps a global `VolumeProfile` at decision time |
+| `FocusPoint` | until option clicked | No | Presents two `Clickable` options; records choice to `PlayerChoicesSO`; optionally enables a per-option scene `Volume` at decision time that stays on for the rest of the program |
 | `MiniGame` subclass | until `Complete()` or `Fail()` | No | Interactive puzzles embedded in panels. `MiniGame` itself is abstract — subclass it for each puzzle (e.g. `SignalGame`). |
 
 ---
@@ -254,7 +253,7 @@ MonoBehaviours
   AnimatedStep             — blocking IPanelStep; populates IVariantContent children on activate
   PanelText                — focus-variant text (dialogue/prose/captions); implements IVariantContent; child of AnimatedStep
   SpriteVariant            — focus-variant sprite swap; implements IVariantContent; child of AnimatedStep
-  FocusPoint               — blocking IPanelStep; holds two Clickable refs; RecordChoice() wired via Inspector UnityEvent; writes choice to PlayerChoicesSO; optionally swaps a global VolumeProfile at decision time
+  FocusPoint               — blocking IPanelStep; holds two Clickable refs; RecordChoice() wired via Inspector UnityEvent; writes choice to PlayerChoicesSO; optionally enables a per-option scene Volume at decision time that stays on for the rest of the program
   Clickable                — click target; exposes UnityEvent onClick (wired in Inspector); invoked by ClickManager via Physics.Raycast; requires 3D Collider
   ClickManager             — routes Physics.Raycast hits to Clickable.Click(); must be present in any scene using FocusPoint or mini-games
   FrameMask                — syncs SpriteMask size to parent 9-sliced SpriteRenderer
