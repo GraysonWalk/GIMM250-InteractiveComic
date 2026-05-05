@@ -10,6 +10,7 @@ public class NavigationPresenter : MonoBehaviour
     #region Variables
 
     [SerializeField] private ComicManager comicManager;
+    [SerializeField] private NavigationController navigationController;
 
     [Header("Navigation Arrows")]
     [Tooltip("CanvasGroup on the Back button — controls visibility without restarting its Animator.")]
@@ -39,6 +40,8 @@ public class NavigationPresenter : MonoBehaviour
     {
         if (comicManager == null)
             Debug.LogError("[NavigationPresenter] comicManager is not assigned.", this);
+        if (navigationController == null)
+            Debug.LogError("[NavigationPresenter] navigationController is not assigned.", this);
     }
 
     private void Awake()
@@ -67,6 +70,8 @@ public class NavigationPresenter : MonoBehaviour
         comicManager.OnReplayAvailabilityChanged.AddListener(OnReplayAvailabilityChanged);
         comicManager.OnNavigationAvailabilityChanged.AddListener(OnNavigationAvailabilityChanged);
         comicManager.OnCurrentPanelReadyForInput.AddListener(OnPanelReadyForInput);
+        if (navigationController != null)
+            navigationController.OnAdvanceAccepted.AddListener(OnAdvanceAccepted);
         if (replayButton != null)
             replayButton.onClick.AddListener(comicManager.ReplayCurrentPanel);
     }
@@ -78,6 +83,8 @@ public class NavigationPresenter : MonoBehaviour
         comicManager.OnReplayAvailabilityChanged.RemoveListener(OnReplayAvailabilityChanged);
         comicManager.OnNavigationAvailabilityChanged.RemoveListener(OnNavigationAvailabilityChanged);
         comicManager.OnCurrentPanelReadyForInput.RemoveListener(OnPanelReadyForInput);
+        if (navigationController != null)
+            navigationController.OnAdvanceAccepted.RemoveListener(OnAdvanceAccepted);
         if (replayButton != null)
             replayButton.onClick.RemoveListener(comicManager.ReplayCurrentPanel);
     }
@@ -101,12 +108,22 @@ public class NavigationPresenter : MonoBehaviour
     }
 
     /// <summary>
-    ///     Called whenever the panel is ready for the next Advance Input button press.
-    ///     Shows the advance hint only if the player is also at the story front.
+    ///     Called when the player's Advance input is accepted. Hides the hint immediately —
+    ///     it will re-appear once the blocking step completes and <see cref="OnPanelReadyForInput"/> fires.
     /// </summary>
-    private void OnPanelReadyForInput()
+    private void OnAdvanceAccepted()
     {
-        if (_advanceStructurallyAvailable && advanceHintText != null)
+        if (advanceHintText != null) advanceHintText.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    ///     Called whenever the panel is ready for the next Advance Input button press.
+    ///     Shows the advance hint only when the player is at the story front AND the next step
+    ///     is an advance-driven step (not a FocusPoint or MiniGame — those suppress showHint).
+    /// </summary>
+    private void OnPanelReadyForInput(bool showHint)
+    {
+        if (showHint && _advanceStructurallyAvailable && advanceHintText != null)
             advanceHintText.gameObject.SetActive(true);
     }
 

@@ -12,6 +12,13 @@
 /[Uu]ser[Ss]ettings/
 *.log
 
+# IDE — Rider / Copilot state files (machine-specific, never commit)
+.idea/
+*.DotSettings.user
+
+# macOS
+.DS_Store
+
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
 *.blend1
 *.blend1.meta

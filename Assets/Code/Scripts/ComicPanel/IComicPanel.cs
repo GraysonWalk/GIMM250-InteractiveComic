@@ -7,13 +7,23 @@ public interface IComicPanel
     LoopCount FirstLoop { get; }
     LoopCount LastLoop { get; }
     CinemachineBlendDefinition IncomingBlend { get; }
+
+    /// <summary>
+    ///     Music to play when this panel is displayed. Null = no change (keep the current track playing).
+    ///     A non-null SO with a null Clip = fade current music to silence. Read by MusicController.
+    /// </summary>
+    MusicTrackSO Music { get; }
+
     UnityEvent OnPanelComplete { get; }
 
     /// <summary>
     ///     Fired when the panel is ready for the next advance button press:
     ///     after intro animation, after each non-blocking step, and after each blocking step completes.
+    ///     The bool argument is true when the advance hint ("press spacebar") should be shown.
+    ///     ComicPanel always fires true; ComicManager passes false for cases where the player
+    ///     is not at the story front (e.g. historical replay completion).
     /// </summary>
-    UnityEvent OnReadyForInput { get; }
+    UnityEvent<bool> OnReadyForInput { get; }
 
     bool HasBeenVisited { get; } // True after the first Show() call; used to decide whether to offer replay
 
