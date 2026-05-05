@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7032d6e9d6cb4589881e7a539d167d77, type: 3}
   m_Name: Panel_28_ThoseLostC
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
-  firstLoop: 4
+  firstLoop: 0
   lastLoop: 4
   rank: 280
   requireAdvanceToComplete: 1
-  replayAnimationOnRevisit: 1
+  replayAnimationOnRevisit: 0
   incomingBlend:
     Style: 1
-    Time: 1
+    Time: 3
     CustomCurve:
       serializedVersion: 2
       m_Curve: []

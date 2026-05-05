@@ -8,21 +8,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1277019451970577945, guid: 35a2054abdd3c458f8f2bada9601cad5, type: 3}
-      propertyPath: m_Color.a
-      value: 0
+    - target: {fileID: 1367076864712635182, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1367076864712635182, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -43
       objectReference: {fileID: 0}
     - target: {fileID: 3680867659152069017, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: b345c25f915a5486cbf29bcbe0571e73, type: 2}
     - target: {fileID: 4135095491041035660, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
+      propertyPath: data
+      value: 
+      objectReference: {fileID: 11400000, guid: 37c3b5606b811428abfb5b82322deae5, type: 2}
+    - target: {fileID: 4135095491041035660, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
       propertyPath: choices
       value: 
       objectReference: {fileID: 11400000, guid: 9f5662d2cf4ac47b09986535f7d5e605, type: 2}
     - target: {fileID: 5089007462190654251, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
       propertyPath: m_Name
-      value: Test3
+      value: Test3 Variant
       objectReference: {fileID: 0}
     - target: {fileID: 8146915638931047242, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
       propertyPath: m_Pivot.x
@@ -95,6 +103,14 @@ PrefabInstance:
     - target: {fileID: 8146915638931047242, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8934351034356299496, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
+      propertyPath: Lens.FieldOfView
+      value: 6.585193
+      objectReference: {fileID: 0}
+    - target: {fileID: 1277019451970577945, guid: 35a2054abdd3c458f8f2bada9601cad5, type: 3}
+      propertyPath: m_Color.a
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
