@@ -19,8 +19,9 @@ public interface IComicPanel
     /// <summary>
     ///     Fired when the panel is ready for the next advance button press:
     ///     after intro animation, after each non-blocking step, and after each blocking step completes.
-    ///     The bool argument is true when the advance hint ("press spacebar") should be shown —
-    ///     false when the next step is click-driven (FocusPoint, MiniGame) and the hint is misleading.
+    ///     The bool argument is true when the advance hint ("press spacebar") should be shown.
+    ///     ComicPanel always fires true; ComicManager passes false for cases where the player
+    ///     is not at the story front (e.g. historical replay completion).
     /// </summary>
     UnityEvent<bool> OnReadyForInput { get; }
 

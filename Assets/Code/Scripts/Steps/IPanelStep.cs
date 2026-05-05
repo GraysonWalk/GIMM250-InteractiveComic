@@ -14,13 +14,6 @@ public interface IPanelStep
     bool IsBlocking { get; }
 
     /// <summary>
-    ///     If true, the "press spacebar" advance hint should be shown when this step is next in
-    ///     the queue. Set to false on click-driven steps (FocusPoint, MiniGame) so the hint does
-    ///     not appear while the player is expected to interact with the panel directly.
-    /// </summary>
-    bool ShowAdvanceHint { get; }
-
-    /// <summary>
     ///     True when this step should be shown by ShowInstant() (history navigation / final state).
     ///     Implementations combine designer intent (e.g. persistsInFinalState) with runtime state
     ///     (e.g. hasBeenActivated) — ShowInstant() asks one question and gets one answer.

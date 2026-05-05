@@ -32,8 +32,8 @@ public class ComicPanel : MonoBehaviour, IComicPanel
     ///     Fired whenever the panel is ready for the next advance button press:
     ///     — after the intro animation finishes (polled by coroutine)
     ///     — after a blocking step completes
-    ///     The bool argument is true when the advance hint should be shown. It is false when the
-    ///     next queued step is click-driven (FocusPoint, MiniGame) and the hint would be misleading.
+    ///     The bool argument is true when the advance hint should be shown; false is used by
+    ///     ComicManager for specific cases (e.g. historical replay completion) where hinting is wrong.
     /// </summary>
     public UnityEvent<bool> OnReadyForInput { get; } = new();
 
@@ -224,7 +224,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
                 // Last step was non-blocking. Wait for an explicit advance press if required,
                 // otherwise complete the panel immediately.
                 if (data.RequireAdvanceToComplete)
-                    OnReadyForInput.Invoke(ShouldShowAdvanceHint());
+                    OnReadyForInput.Invoke(true);
                 else
                     OnPanelComplete.Invoke();
                 return;
@@ -244,29 +244,14 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         {
             // Last step was blocking. Same choice as above — wait for explicit advance or complete now.
             if (data.RequireAdvanceToComplete)
-                OnReadyForInput.Invoke(ShouldShowAdvanceHint());
+                OnReadyForInput.Invoke(true);
             else
                 OnPanelComplete.Invoke();
         }
         else
         {
-            OnReadyForInput.Invoke(ShouldShowAdvanceHint());
+            OnReadyForInput.Invoke(true);
         }
-    }
-
-    /// <summary>
-    ///     Returns true when the "press spacebar" advance hint should be shown.
-    ///     The hint is suppressed when the next step to be activated is a click-driven step
-    ///     (FocusPoint, MiniGame — any step where ShowAdvanceHint is false) that is also blocking
-    ///     (i.e. it hasn't been activated yet this sequence, or it replays). Non-blocking steps
-    ///     auto-chain on advance (spacebar is still the way to progress) so the hint is shown.
-    /// </summary>
-    private bool ShouldShowAdvanceHint()
-    {
-        if (_currentStep >= _steps.Length) return true; // All steps done — advance moves to next panel.
-        IPanelStep next = _steps[_currentStep];
-        // Show hint unless the next step will block AND wants to suppress it (click-driven interaction).
-        return !next.IsBlocking || next.ShowAdvanceHint;
     }
 
     /// <summary>
@@ -295,7 +280,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         // so HasBeenVisited stays false and the animation replays on next visit.
         HasBeenVisited = true;
         _isBlocked = false;
-        OnReadyForInput.Invoke(ShouldShowAdvanceHint());
+        OnReadyForInput.Invoke(true);
     }
 
     /// <summary>
@@ -309,7 +294,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         if (cam.enabled)
         {
             _isBlocked = false;
-            OnReadyForInput.Invoke(ShouldShowAdvanceHint());
+            OnReadyForInput.Invoke(true);
         }
     }
 

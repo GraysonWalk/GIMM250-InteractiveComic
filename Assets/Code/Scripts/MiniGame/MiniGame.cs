@@ -23,10 +23,6 @@ public class MiniGame : StepBase, IMiniGame
     // Minigames are interactive — they never persist as static display elements in the final state.
     public override bool ShowInFinalState => false;
 
-    // Minigame interaction is game-driven (clicks, drags, etc.); the spacebar advance hint should
-    // not appear while this step is queued — there is no "press spacebar" action for the player.
-    public override bool ShowAdvanceHint => false;
-
     #endregion
 
     #region Methods

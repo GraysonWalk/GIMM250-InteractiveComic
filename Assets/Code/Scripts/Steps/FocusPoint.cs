@@ -59,10 +59,6 @@ public class FocusPoint : StepBase
     // True once a choice has been made; used by ShowInFinalState to show this step in history view.
     public override bool ShowInFinalState => HasBeenActivated;
 
-    // FocusPoint interaction is click-based; the spacebar advance hint should not appear while
-    // this step is queued. The player clicks an option — there is no "press spacebar" action.
-    public override bool ShowAdvanceHint => false;
-
     #endregion
 
     #region Methods
