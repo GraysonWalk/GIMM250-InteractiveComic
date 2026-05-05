@@ -501,7 +501,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MiniGame
   replayOnRevisit: 0
   hideOnRevisit: 0
-  game: {fileID: 5456167281894332469}
+  game: {fileID: 5637984658884799476}
 --- !u!95 &9210553263055232638
 Animator:
   serializedVersion: 7
