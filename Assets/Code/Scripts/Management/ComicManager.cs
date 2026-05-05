@@ -16,6 +16,7 @@ public class ComicManager : MonoBehaviour
     private IComicPanel[] _comicPanels;
 
     [SerializeField] private CinemachineBrain brain;
+    [SerializeField] 
 
     private IComicPanel _currentComicPanel;
     private IComicPanel _displayedPanel;
@@ -23,6 +24,7 @@ public class ComicManager : MonoBehaviour
     private bool _isReplaying;
     private LoopCount _currentLoopCount;
     private readonly CommandHistory _commandHistory = new();
+    
 
     /// <summary>
     ///     Relayed from the current panel's OnReadyForInput.
@@ -247,6 +249,7 @@ public class ComicManager : MonoBehaviour
         if (wrapped && _currentLoopCount < LoopCountBounds.Last)
         {
             _currentLoopCount++;
+            UpdateEndPanel();
             // Re-query with the incremented loop count so newly-unlocked panels are included.
             next = PanelSelector.NextPanel(_comicPanels, null, _currentLoopCount);
             if (next == null)            {
@@ -261,6 +264,12 @@ public class ComicManager : MonoBehaviour
     private void BroadcastNavigationAvailability()
     {
         OnNavigationAvailabilityChanged.Invoke(_commandHistory.CanUndo, _commandHistory.CanRedo);
+    }
+
+    private void UpdateEndPanel()
+    {
+        EndPanel endPanel = GetComponent<EndPanel>();
+        endPanel.UpdateEndPanelOnLoop(_currentLoopCount);
     }
 
     #endregion
