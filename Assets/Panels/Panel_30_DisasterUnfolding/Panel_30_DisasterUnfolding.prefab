@@ -153,7 +153,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 9195872794627345995, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+  - {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -200,7 +200,7 @@ MonoBehaviour:
   m_text: There's still more we're missing...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
-  m_sharedMaterial: {fileID: 9195872794627345995, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+  m_sharedMaterial: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -224,7 +224,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 2
+  m_fontSize: 1.95
   m_fontSizeBase: 4.4
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -284,7 +284,7 @@ GameObject:
   - component: {fileID: 389394253091298365}
   - component: {fileID: 2986455478079115109}
   - component: {fileID: 2996139875225277430}
-  - component: {fileID: 2831450431630603010}
+  - component: {fileID: 8017963520519964695}
   m_Layer: 0
   m_Name: Text (3)
   m_TagString: Untagged
@@ -336,7 +336,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 9195872794627345995, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+  - {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -383,7 +383,7 @@ MonoBehaviour:
   m_text: Save the ship
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
-  m_sharedMaterial: {fileID: 9195872794627345995, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+  m_sharedMaterial: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -407,7 +407,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 2.6
+  m_fontSize: 2.55
   m_fontSizeBase: 4.4
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -476,7 +476,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.54013, y: 0.4798528, z: 0}
   m_Center: {x: -1.3505965, y: -0.69619924, z: 4.98228e-15}
---- !u!114 &2831450431630603010
+--- !u!114 &8017963520519964695
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -485,12 +485,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 5618852044855344837}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eefc88dce1f969646a1d3d90410311c2, type: 3}
+  m_Script: {fileID: 11500000, guid: 93b785c13a9954cf78d0adff469f7b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Clickable
   onClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4636553423301549652}
+        m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Ending_Ship_Clip
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6097892040501724109
 GameObject:
   m_ObjectHideFlags: 0
@@ -615,8 +627,8 @@ GameObject:
   - component: {fileID: 8401334416060932524}
   - component: {fileID: 8521711257142893470}
   - component: {fileID: 3269274270010240437}
-  - component: {fileID: 8756407948690622636}
   - component: {fileID: 6751973264657120703}
+  - component: {fileID: 5420582875934885696}
   m_Layer: 0
   m_Name: Text (5)
   m_TagString: Untagged
@@ -668,7 +680,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 9195872794627345995, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+  - {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -715,7 +727,7 @@ MonoBehaviour:
   m_text: Save the Planet
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
-  m_sharedMaterial: {fileID: 9195872794627345995, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+  m_sharedMaterial: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -739,7 +751,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 2.75
+  m_fontSize: 2.7
   m_fontSizeBase: 4.4
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -808,21 +820,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.9455371, y: 0.47328377, z: 0}
   m_Center: {x: -2.5244308, y: -0.70326495, z: 7.452616e-15}
---- !u!114 &8756407948690622636
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7352109289030634031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eefc88dce1f969646a1d3d90410311c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Clickable
-  onClick:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!95 &6751973264657120703
 Animator:
   serializedVersion: 7
@@ -845,6 +842,33 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5420582875934885696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7352109289030634031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93b785c13a9954cf78d0adff469f7b5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Clickable
+  onClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4636553423301549652}
+        m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Ending_Planet_Clip
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &7365483778045706050
 GameObject:
   m_ObjectHideFlags: 0
@@ -907,7 +931,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 9195872794627345995, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+  - {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -954,7 +978,7 @@ MonoBehaviour:
   m_text: or
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
-  m_sharedMaterial: {fileID: 9195872794627345995, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+  m_sharedMaterial: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1218,5 +1242,10 @@ PrefabInstance:
 --- !u!4 &162941007568456839 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8146915638931047242, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
+  m_PrefabInstance: {fileID: 8308377597167341517}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &4636553423301549652 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 3680867659152069017, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
   m_PrefabInstance: {fileID: 8308377597167341517}
   m_PrefabAsset: {fileID: 0}
