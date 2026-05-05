@@ -354,7 +354,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3499274836622511627}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e18cb0259e24534fa17d4d64c843421, type: 3}
+  m_Script: {fileID: 11500000, guid: aa70738c8c04444a1a48257cc896576b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MouseAttach
   mask: {fileID: 3499274836622511627}
@@ -501,7 +501,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MiniGame
   replayOnRevisit: 0
   hideOnRevisit: 0
-  game: {fileID: 5637984658884799476}
 --- !u!95 &9210553263055232638
 Animator:
   serializedVersion: 7
@@ -621,7 +620,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 9195872794627345995, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+  - {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -668,7 +667,7 @@ MonoBehaviour:
   m_text: "Incoming Signal... \nWe need to pin it down"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
-  m_sharedMaterial: {fileID: 9195872794627345995, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+  m_sharedMaterial: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -864,13 +863,17 @@ PrefabInstance:
       propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6468074757368004976, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1780339939596216169, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1935499825189301812}
+    - targetCorrespondingSourceObject: {fileID: 1780339939596216169, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4380413614561438096}
   m_SourcePrefab: {fileID: 100100000, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
 --- !u!1 &1204323628311533594 stripped
 GameObject:
@@ -936,6 +939,45 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &4380413614561438096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204323628311533594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93b785c13a9954cf78d0adff469f7b5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Clickable
+  onClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5070414177653752763}
+        m_TargetAssemblyTypeName: MiniGame, Assembly-CSharp
+        m_MethodName: EndGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1204323628311533594}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &4037116331779826075 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3460211065443770088, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
@@ -1073,13 +1115,17 @@ PrefabInstance:
       propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6468074757368004976, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1780339939596216169, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6825758215109965630}
+    - targetCorrespondingSourceObject: {fileID: 1780339939596216169, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2345337543090465667}
   m_SourcePrefab: {fileID: 100100000, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
 --- !u!1 &308167303867197743 stripped
 GameObject:
@@ -1145,6 +1191,45 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &2345337543090465667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 308167303867197743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93b785c13a9954cf78d0adff469f7b5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Clickable
+  onClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8079229709625929037}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 308167303867197743}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &3240056911580663982 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3460211065443770088, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
@@ -1182,6 +1267,10 @@ PrefabInstance:
       propertyPath: m_margin.y
       value: 0.25
       objectReference: {fileID: 0}
+    - target: {fileID: 3133758978349491170, guid: d3419813ce5994a3d89482700483b965, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
     - target: {fileID: 3133758978349491170, guid: d3419813ce5994a3d89482700483b965, type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4278190080
@@ -1306,6 +1395,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5169750343447980627, guid: d3419813ce5994a3d89482700483b965, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
     - target: {fileID: 5628965257147111601, guid: d3419813ce5994a3d89482700483b965, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -1463,13 +1556,17 @@ PrefabInstance:
       propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6468074757368004976, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1780339939596216169, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8581340059834507222}
+    - targetCorrespondingSourceObject: {fileID: 1780339939596216169, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2533752878204748272}
   m_SourcePrefab: {fileID: 100100000, guid: 726bdd8209f3e0d4ebd01d88dd10b04e, type: 3}
 --- !u!4 &6390355541939279052 stripped
 Transform:
@@ -1540,3 +1637,42 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &2533752878204748272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8079229709625929037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93b785c13a9954cf78d0adff469f7b5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Clickable
+  onClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1204323628311533594}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 8079229709625929037}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
