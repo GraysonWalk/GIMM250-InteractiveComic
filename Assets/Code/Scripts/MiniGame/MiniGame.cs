@@ -32,7 +32,7 @@ public class MiniGame : StepBase, IMiniGame
     {
         bool skip = BeginActivation();
         if (skip) return; // Already completed and not set to replay — panel moves on without blocking.
-        game.SetActive(true);
+        gameObject.SetActive(true);
         StartGame();
     }
 
@@ -43,7 +43,7 @@ public class MiniGame : StepBase, IMiniGame
     public virtual void EndGame()
     {
         OnStepComplete.Invoke();
-        game.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     /// <summary>Call this from your subclass when the player successfully completes the minigame.</summary>

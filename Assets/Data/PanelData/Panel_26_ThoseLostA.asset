@@ -13,15 +13,13 @@ MonoBehaviour:
   m_Name: Panel_26_ThoseLostA
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
   firstLoop: 0
-  hasLeadershipVariant: 0
-  hasPhilosophyVariant: 0
-  hasScienceVariant: 0
-  rank: 0
-  requireAdvanceToComplete: 1
-  replayAnimationOnRevisit: 1
+  lastLoop: 4
+  rank: 9
+  requireAdvanceToComplete: 0
+  replayAnimationOnRevisit: 0
   incomingBlend:
     Style: 1
-    Time: 1
+    Time: 2
     CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -29,3 +27,4 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   introCrossFadeDuration: 0.1
+  music: {fileID: 0}

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -11,11 +12,17 @@ using UnityEngine;
 ///     3. On the last keyframe add an Animation Event pointing to OnAnimationFinished().
 ///     4. Optionally: add PanelText or SpriteVariant children and fill in variant content in the Inspector.
 ///     5. Tick "Persists In Final State" if this element should remain visible at the panel's end.
+///     If the Animation Event in step 3 is missing, a safety fallback coroutine still completes
+///     the step after the clip's length elapses and logs a warning naming the offending GameObject.
 /// </summary>
 [RequireComponent(typeof(Animator))]
 public sealed class AnimatedStep : StepBase
 {
     #region Variables
+
+    // Grace period added on top of the clip length before the safety fallback fires.
+    // Gives the Animation Event a chance to land at exactly time == stopTime without racing it.
+    private const float SafetyGraceSeconds = 0.25f;
 
     [Tooltip("If ticked, this element remains visible when the panel reaches its final state.")]
     [SerializeField] private bool persistsInFinalState;
@@ -25,6 +32,12 @@ public sealed class AnimatedStep : StepBase
     public override bool ShowInFinalState => persistsInFinalState && HasBeenActivated;
 
     private Animator _anim;
+
+    // Set to true the moment OnStepComplete is fired this activation, by either the Animation Event
+    // or the safety fallback. Prevents double-firing if the event lands after the fallback warning.
+    private bool _completedThisActivation;
+
+    private Coroutine _safetyCoroutine;
 
     #endregion
 
@@ -41,6 +54,9 @@ public sealed class AnimatedStep : StepBase
     /// </summary>
     public void OnAnimationFinished()
     {
+        if (_completedThisActivation) return;
+        _completedThisActivation = true;
+        StopSafetyCoroutine();
         OnStepComplete.Invoke();
     }
 
@@ -54,6 +70,11 @@ public sealed class AnimatedStep : StepBase
     {
         bool skip = BeginActivation();
 
+        // Reset per-activation completion state and cancel any safety coroutine left over from a
+        // previous activation (replay path) before deciding which branch to take.
+        _completedThisActivation = false;
+        StopSafetyCoroutine();
+
         if (!skip)
         {
             // First visit (or replay) — populate all variant content and play the animation from the start.
@@ -63,6 +84,11 @@ public sealed class AnimatedStep : StepBase
 
             gameObject.SetActive(true);
             SeekAnimator(0f);
+
+            // Start the safety fallback. If the clip's last-frame Animation Event is missing or
+            // misconfigured, this still fires OnStepComplete after the clip length + grace period
+            // so the panel never softlocks — and emits a warning identifying the offending step.
+            _safetyCoroutine = StartCoroutine(SafetyFallback());
         }
         else if (!hideOnRevisit)
         {
@@ -71,6 +97,12 @@ public sealed class AnimatedStep : StepBase
             SeekAnimator(1f);
         }
         // else: hideOnRevisit = true → stay deactivated. IsBlocking is false so ComicPanel auto-chains.
+    }
+
+    public override void Deactivate()
+    {
+        StopSafetyCoroutine();
+        base.Deactivate();
     }
 
     // Settles the Animator into its default state then seeks to the given normalised time.
@@ -83,6 +115,46 @@ public sealed class AnimatedStep : StepBase
         AnimatorStateInfo state = _anim.GetCurrentAnimatorStateInfo(0);
         _anim.Play(state.fullPathHash, 0, normalizedTime);
         _anim.Update(0f);
+    }
+
+    // Watches the Animator after Activate() plays its clip and fires OnStepComplete itself if the
+    // expected last-keyframe Animation Event never lands. Length is read from the Animator's
+    // current state (post-seek), so it reflects whichever clip the controller actually entered.
+    // SafetyGraceSeconds gives a legitimate event a chance to win the race; _completedThisActivation
+    // ensures we don't double-fire if the event lands a frame after the fallback already did.
+    private IEnumerator SafetyFallback()
+    {
+        // Wait one frame so the Animator has a chance to evaluate the new state and surface its length.
+        yield return null;
+
+        AnimatorStateInfo state = _anim.GetCurrentAnimatorStateInfo(0);
+        float clipLength = state.length > 0f ? state.length : 1f;
+        float deadline = Time.time + clipLength + SafetyGraceSeconds;
+
+        while (Time.time < deadline)
+        {
+            if (_completedThisActivation) yield break;
+            yield return null;
+        }
+
+        if (_completedThisActivation) yield break;
+
+        Debug.LogWarning(
+            $"[AnimatedStep] '{gameObject.name}' clip finished but no OnAnimationFinished animation event " +
+            $"fired within {clipLength + SafetyGraceSeconds:0.00}s. Auto-completing the step. Add an " +
+            "Animation Event on the last keyframe of the clip pointing to OnAnimationFinished() to silence this warning.",
+            this);
+
+        _completedThisActivation = true;
+        _safetyCoroutine = null;
+        OnStepComplete.Invoke();
+    }
+
+    private void StopSafetyCoroutine()
+    {
+        if (_safetyCoroutine == null) return;
+        StopCoroutine(_safetyCoroutine);
+        _safetyCoroutine = null;
     }
 
     /// <summary>
