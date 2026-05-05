@@ -521,26 +521,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Panel_29_EmergencyResponse Variant
       objectReference: {fileID: 0}
-    - target: {fileID: 4101464349325263196, guid: 79e07a46dfa2f4b4b895fc1da36dd2bf, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4477577109311690819, guid: 79e07a46dfa2f4b4b895fc1da36dd2bf, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
-    - target: {fileID: 4564192631649422046, guid: 79e07a46dfa2f4b4b895fc1da36dd2bf, type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
-    - target: {fileID: 4564192631649422046, guid: 79e07a46dfa2f4b4b895fc1da36dd2bf, type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
-    - target: {fileID: 4564192631649422046, guid: 79e07a46dfa2f4b4b895fc1da36dd2bf, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -754,7 +734,7 @@ Camera:
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 35
+  m_FocalLength: 30
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
@@ -769,7 +749,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 10000
-  field of view: 36.395817
+  field of view: 41.96697
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -795,8 +775,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.27748236, y: 0, z: 0, w: 0.96073073}
-  m_LocalPosition: {x: 75.79512, y: 194.84233, z: -1656.7081}
+  m_LocalRotation: {x: 0.008562545, y: -0.9831871, z: -0.04782789, w: -0.1760183}
+  m_LocalPosition: {x: -85.34943, y: -330.4971, z: 346.69403}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
