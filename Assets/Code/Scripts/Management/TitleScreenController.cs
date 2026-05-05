@@ -31,6 +31,16 @@ public class TitleScreenController : MonoBehaviour
     [Tooltip("The start button the player presses to begin.")]
     [SerializeField] private Button startButton;
 
+    [Header("Audio (Optional)")]
+    [Tooltip("Music played while the title screen is visible. Crossfaded out automatically when " +
+             "the displayed panel changes — set Panel 1's PanelDataSO.Music to drive the swap, or " +
+             "leave Panel 1's Music empty to let the title music continue into the comic.")]
+    [SerializeField] private MusicTrackSO titleMusic;
+
+    [Tooltip("MusicController in the scene. Required only if Title Music is assigned. The same " +
+             "controller drives all subsequent panel music; do not create a second instance.")]
+    [SerializeField] private MusicController musicController;
+
     #endregion
 
     #region Methods
@@ -45,8 +55,17 @@ public class TitleScreenController : MonoBehaviour
             Debug.LogError("[TitleScreenController] Title UI is not assigned.", this);
         if (startButton == null)
             Debug.LogError("[TitleScreenController] Start Button is not assigned.", this);
+        if (titleMusic != null && musicController == null)
+            Debug.LogError("[TitleScreenController] Title Music is assigned but MusicController is not. " +
+                           "Assign a MusicController, or clear Title Music.", this);
 
         startButton?.onClick.AddListener(OnStartClicked);
+
+        // Begin title music. The crossfade to Panel 1 (or to silence) happens automatically
+        // when ComicManager.OnDisplayedPanelChanged fires from StartComic() — we do not stop
+        // title music explicitly here.
+        if (titleMusic != null && musicController != null)
+            musicController.Play(titleMusic);
     }
 
     private void OnDestroy()

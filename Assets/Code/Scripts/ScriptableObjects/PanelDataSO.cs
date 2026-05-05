@@ -37,6 +37,11 @@ public class PanelDataSO : ScriptableObject
              "Shorter values snap to the intro faster; longer values give a softer start.")]
     [SerializeField] private float introCrossFadeDuration = 0.1f;
 
+    [Header("Audio")]
+    [Tooltip("Music to play when this panel is displayed. Leave empty to keep the current music " +
+             "playing unchanged. Assign a MusicTrackSO with no clip to fade music out to silence.")]
+    [SerializeField] private MusicTrackSO music;
+
     public int Rank => rank;
     public LoopCount FirstLoop => firstLoop;
     public LoopCount LastLoop => lastLoop;
@@ -44,4 +49,5 @@ public class PanelDataSO : ScriptableObject
     public bool ReplayAnimationOnRevisit => replayAnimationOnRevisit;
     public CinemachineBlendDefinition IncomingBlend => incomingBlend;
     public float IntroCrossFadeDuration => introCrossFadeDuration;
+    public MusicTrackSO Music => music;
 }

@@ -7,6 +7,13 @@ public interface IComicPanel
     LoopCount FirstLoop { get; }
     LoopCount LastLoop { get; }
     CinemachineBlendDefinition IncomingBlend { get; }
+
+    /// <summary>
+    ///     Music to play when this panel is displayed. Null = no change (keep the current track playing).
+    ///     A non-null SO with a null Clip = fade current music to silence. Read by MusicController.
+    /// </summary>
+    MusicTrackSO Music { get; }
+
     UnityEvent OnPanelComplete { get; }
 
     /// <summary>

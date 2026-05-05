@@ -40,6 +40,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
     public LoopCount LastLoop => data.LastLoop;
     public int Rank => data.Rank;
     public CinemachineBlendDefinition IncomingBlend => data.IncomingBlend;
+    public MusicTrackSO Music => data.Music;
     public bool HasBeenVisited { get; private set; }
 
     #endregion

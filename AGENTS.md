@@ -14,6 +14,7 @@ Unity URP project (Unity 6, URP 17.x). An interactive 3D comic where a Cinemachi
 ScriptableObjects (data, designer-editable)
   PanelDataSO      ← rank, firstLoop, lastLoop, blend, completion config per panel
   PlayerChoicesSO  ← ScienceFocus / PhilosophyFocus / LeadershipFocus (runtime shared state)
+  MusicTrackSO     ← clip, target dB, loop, default fade-in / fade-out durations
 
 MonoBehaviours (runtime behaviour)
   ComicManager        ← panel list + loop pointer; calls PanelSelector + CommandHistory
@@ -33,6 +34,7 @@ MonoBehaviours (runtime behaviour)
   CursorManager       ← sets default cursor on startup; exposes static ApplyDefault()
   TitleScreenController ← title screen UI + start button; calls ComicManager.StartComic() on click
   EndScreenController   ← stub — end screen UI + restart/quit
+  MusicController       ← AudioMixer-backed two-source crossfader; subscribes to ComicManager.OnDisplayedPanelChanged
 
 Editor-only
   PanelViewLock       ← solo-locks a CinemachineCamera in Game View for editing; stripped from builds
@@ -113,12 +115,17 @@ Assets/Data/
   │   Panel_02_RiggedDrawA.asset
   │   ...
   PlayerChoices/      ← single shared PlayerChoicesSO runtime asset
-      PlayerChoices.asset
+  │   PlayerChoices.asset
+  Music/              ← one MusicTrackSO per cue
+      Title.asset
+      Story_Loop0.asset
+      Silence.asset                  (Clip = null — explicit "fade to silence" cue)
 ```
 
 - `PanelDataSO` assets must be in `Data/PanelData/`, not inside panel art folders. Keeping them together makes it easy to overview all panel configuration without opening individual scene hierarchies.
 - Name `PanelDataSO` assets with a zero-padded rank prefix (`Panel_01_`, `Panel_02_`) so the Project window sort order matches comic order without opening each asset.
 - There is only ever **one** `PlayerChoices.asset` — all scenes share the same asset via `[SerializeField]` references.
+- `MusicTrackSO` assets live in `Data/Music/`, not inside `Assets/Shared/Sound/` (which holds the raw audio clips and the mixer asset). `Silence.asset` is the canonical "fade music out" cue — assign it to a `PanelDataSO.Music` field instead of leaving the field empty (empty = "no change").
 
 ## Panel Asset Organisation
 
@@ -183,6 +190,8 @@ Assets/Shared/
 | `Assets/Code/Scripts/Editor Tools/PanelViewLock.cs` | Editor-only — solo-locks a `CinemachineCamera` in Game View for panel editing; stripped from builds |
 | `Assets/Code/Scripts/Management/TitleScreenController.cs` | Title screen — hides title UI, disables title camera, calls `ComicManager.StartComic()` on button press |
 | `Assets/Code/Scripts/Management/EndScreenController.cs` | Stub — end screen UI + restart/quit |
+| `Assets/Code/Scripts/Audio/MusicController.cs` | Two-source dB-space music crossfader; reads `panel.Music` from `ComicManager.OnDisplayedPanelChanged` events; mixer setup documented in the class XML doc |
+| `Assets/Code/Scripts/ScriptableObjects/MusicTrackSO.cs` | Designer-editable music cue — clip, target volume in dB, loop flag, default fade-in / fade-out durations. Null `Clip` represents intentional silence |
 | `Assets/ProjectPlanning/CodeArchitecture` | Full architecture reference including ScriptableObjects, CommandHistory, interfaces |
 
 ---
@@ -267,6 +276,18 @@ When a step's `IsBlocking` is `false` and it is not the last step, `Advance()` i
 `ComicPanel.Replay()` (the Replay button) calls `PrepareForReplay()` on every step before restarting, unconditionally resetting `_hasBeenActivated = false`. This means every step animates and blocks again regardless of `replayOnRevisit` / `hideOnRevisit`. Steps that should preserve their state across explicit replays (e.g. `FocusPoint` showing the previously chosen option rather than re-presenting the choice) override `PrepareForReplay()` in their concrete class and leave `_hasBeenActivated` untouched.
 
 Do not collapse `replayOnRevisit` / `hideOnRevisit` into a single enum — the two bools serialise cleanly, map clearly to Inspector checkboxes, and avoid the serialisation migration that renaming enum values would require.
+
+**`OnDisplayedPanelChanged` fires AFTER the camera command completes, not before.**
+The event is invoked at the end of `SwitchToPanel`, `RetreatComic`, and `RedoPanel` — after `_commandHistory.Execute/Undo/Redo` has already run `Show()` / `ShowInstant()` / `Hide()` and after `_displayedPanel` has been reassigned. Subscribers can therefore read the panel's final state (`HasBeenVisited`, active steps, current camera) without race conditions. Firing it earlier would break this invariant: a `MusicController` reading `panel.Music` and starting playback would do so before the panel was visible, producing audible-before-visible cues.
+
+The event fires for forward (`SwitchToPanel`), back (`RetreatComic`), and history-forward (`RedoPanel`) navigation, but **not** for replay — `ReplayCurrentPanel` does not change which panel is displayed. Subscribers that must react to replay should listen to `OnReplayAvailabilityChanged` instead.
+
+The argument is `IComicPanel`. Subscribers must not assume it is the story-front panel — during back/forward navigation it may be a historical panel. If a subscriber genuinely needs that distinction, expose it as a new public property on `ComicManager` rather than reaching into `_currentComicPanel`.
+
+**`MusicController` drives `AudioMixer` exposed parameters, never `AudioSource.volume`.**
+Fades are performed by `mixer.SetFloat("MusicVolumeX", db)` on two exposed mixer-group parameters (`MusicVolumeA`, `MusicVolumeB`), with both `AudioSource` outputs routed through their respective groups. Lerping `AudioSource.volume` directly would bypass the project mix bus, sound front-loaded (linear amplitude is perceptually non-linear), and prevent a single global volume slider from working. Adding new music callers (stingers, tension cues) requires routing through the same exposed parameters; do not introduce a parallel volume system.
+
+A `MusicTrackSO` with `Clip == null` means "fade current music to silence". A `null` `Music` field on a `PanelDataSO` means "no change". This two-state encoding is intentional: the default for an un-set panel field is "do not touch the music", which prevents accidental silence on every panel that hasn't had its music explicitly assigned. Do not collapse the two semantics into a single field.
 
 ---
 

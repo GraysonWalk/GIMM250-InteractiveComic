@@ -6,25 +6,21 @@ for tooltips and custom cursors.
 
 ---
 
-## Git Setup
+## Git Workflow
 
-No per-machine configuration is required. The `.gitattributes` file in the repo root handles binary assets automatically when you pull.
+### Avoiding conflicts
 
-### What .gitattributes does
+- **Pull before you start** — always pull the latest `main` into your branch before editing anything.
+- **Push scene changes quickly** — the longer `Main.unity` sits uncommitted, the more likely a collision.
+- **Commit scene changes separately** from code changes — keeps commits small and easier to merge.
 
-| File type | Behaviour |
-|---|---|
-| Font `.ttf`, `.otf`, `.fnt`, TMP `.asset` atlases | Marked `binary` — git never attempts a text merge; no font conflicts possible |
-| Textures, audio, models, compiled files | Marked `binary` — no merge conflicts |
-| `.unity`, `.prefab`, `.asset`, `.anim`, `.controller` | Standard text merge with LF line endings — resolve conflicts manually in Rider or a text editor |
-| `.cs`, `.json`, `.md` | Normal text merge with LF line endings |
+### Resolving a `Main.unity` conflict
 
-### Tips for reducing scene conflicts
+Open the conflicting file in a merge tool. Each Unity object in the YAML has a unique `fileID` anchor (e.g. `--- !u!1 &492493898`). If your teammate's block has a different `fileID` than yours, accept both — they're separate objects. If the same `fileID` appears on both sides, read carefully and keep the intended version.
 
-- **Pull before you start a session** — always pull the latest before editing the scene.
-- **Push scene changes quickly** — the longer a scene edit sits uncommitted, the more likely a conflict.
-- **Commit scene changes separately** from code changes — smaller, focused commits are easier to merge.
-- **When resolving a `Main.unity` conflict** — open the conflict in Rider's merge tool; each Unity object has a unique `fileID` anchor, so it's usually clear which block belongs to which teammate.
+### Binary assets
+
+`.gitattributes` marks fonts, textures, audio, video, and models as `binary` — git will never attempt to merge these files. Font and texture conflicts are not possible.
 
 ---
 
@@ -61,6 +57,8 @@ The title screen lives in the same scene as the comic. A dedicated `CinemachineC
 | **Title Camera** | The `CinemachineCamera` used for the title view |
 | **Title UI** | The root Canvas or panel GameObject to hide on start |
 | **Start Button** | The `Button` the player clicks |
+| **Title Music** *(optional)* | A `MusicTrackSO` played while the title screen is visible. Crossfaded out automatically when the displayed panel changes — set Panel 1's `Music` to drive the swap, or leave Panel 1's `Music` empty to let the title music continue into the comic. |
+| **Music Controller** | The `MusicController` in the scene. Required only if **Title Music** is assigned. |
 
 ### Camera transition
 
@@ -88,6 +86,8 @@ Name it with a rank prefix so assets sort in comic order:
 | **Require Advance To Complete** | If ticked (default), the player must press the advance button after the last step before moving to the next panel. Untick for cinematic panels that should advance automatically. |
 | **Replay Animation On Revisit** | If ticked, the intro animation replays when this panel is seen again in a later loop. |
 | **Incoming Blend** | How the camera moves to this panel. Default: EaseInOut 1s. Use Cut for instant jumps. |
+| **Intro Cross Fade Duration** | Duration in seconds of the Animator cross-fade into the Intro state when the panel is shown. Shorter values snap faster; longer values give a softer start. Default 0.1s. |
+| **Music** | Optional `MusicTrackSO` to play when this panel is displayed. Leave empty to keep the current track playing unchanged. Assign a track with no clip to fade music out to silence. See the **Music** section below. |
 
 ### 2. Build the Scene Hierarchy
 
@@ -160,8 +160,7 @@ A `FocusPoint` step blocks the advance button until the player clicks one of two
 ComicPanel_XX_Name
   └── Step_FocusPoint          ← FocusPoint component (StepBase); starts inactive
         ├── OptionA             ← any 3D GameObject; Collider + Clickable components
-        ├── OptionB             ← any 3D GameObject; Collider + Clickable components
-        └── PostProcessVariant  ← optional; swaps a global Volume profile at decision time
+        └── OptionB             ← any 3D GameObject; Collider + Clickable components
 ```
 
 ### Inspector wiring
@@ -202,11 +201,7 @@ The profile is swapped immediately when `RecordChoice()` fires and re-applied on
 
 ### Revisit behaviour
 
-On loop revisit or after the Replay button, `FocusPoint` shows the already-chosen state rather than re-presenting the choice. The chosen option's `Clickable` stays enabled; the unchosen option is disabled. Any `IVariantContent` children (e.g. `PostProcessVariant`) are re-populated on revisit so persistent effects are restored correctly when browsing history. `PrepareForReplay()` is a no-op — choices persist.
-
-### Persistent global Volume change
-
-To change the comic's post-process look at the moment the player makes a focus decision — and keep that look for all subsequent panels — add a `PostProcessVariant` child to the `FocusPoint` step and assign the global scene `Volume`. The choice is written to `PlayerChoicesSO` first, then `PostProcessVariant.Populate()` is called immediately, swapping the profile. Because the profile change is applied directly to the `Volume` component it persists until something else changes it.
+On loop revisit or after the Replay button, `FocusPoint` shows the already-chosen state rather than re-presenting the choice. The chosen option's `Clickable` stays enabled; the unchosen option is disabled. If a Global Volume profile was assigned, it is re-applied on revisit so history browsing reflects the player's choice. `PrepareForReplay()` is a no-op — choices persist.
 
 ---
 
@@ -218,7 +213,7 @@ To change the comic's post-process look at the moment the player makes a focus d
 | `PanelText` | — (not a step) | Yes — focus-variant | Dialogue lines, captions, prose; child of `AnimatedStep`, shown/hidden by its Animator |
 | `SpriteVariant` | — (not a step) | No — swaps sprites | Attach to any `SpriteRenderer` child of an `AnimatedStep`; swaps sprite based on player focus choice |
 | `FocusPoint` | until option clicked | No | Presents two `Clickable` options; records choice to `PlayerChoicesSO`; optionally swaps a global `VolumeProfile` at decision time |
-| `MiniGame` subclass | until `Complete()` or `Fail()` | No | Interactive puzzles embedded in panels |
+| `MiniGame` subclass | until `Complete()` or `Fail()` | No | Interactive puzzles embedded in panels. `MiniGame` itself is abstract — subclass it for each puzzle (e.g. `SignalGame`). |
 
 ---
 
@@ -248,8 +243,9 @@ Multiple `PanelText` children can exist under one `AnimatedStep`, each with inde
 
 ```
 ScriptableObjects          — designer-editable data
-  PanelDataSO              — rank, firstLoop, lastLoop, blend, completion config per panel
+  PanelDataSO              — rank, firstLoop, lastLoop, blend, completion, music config per panel
   PlayerChoicesSO          — shared state for all three focuses
+  MusicTrackSO             — clip, target dB, loop, default fade-in / fade-out durations
 
 MonoBehaviours            
   ComicManager             — discovers panels automatically; loop pointer, history navigation
@@ -271,6 +267,7 @@ MonoBehaviours
   CursorManager            — sets default cursor on startup; exposes static ApplyDefault()
   TitleScreenController    — title screen UI + start button; calls ComicManager.StartComic() on click
   EndScreenController      — stub; end screen UI + restart/quit
+  MusicController          — AudioMixer-backed two-source crossfader; subscribes to ComicManager.OnDisplayedPanelChanged
 
 Editor-only
   PanelViewLock            — solo-locks a CinemachineCamera in Game View for editing
@@ -317,9 +314,66 @@ Add `CursorTrigger` to any hoverable GameObject alongside `TooltipTrigger`. Assi
 
 ---
 
-### Data Assets Location
+## Music
+
+`MusicController` plays and crossfades music tracks via two `AudioSource`s routed through two `AudioMixer` groups. Fades are performed in dB space on exposed mixer parameters — never by lerping `AudioSource.volume` — so a single global volume slider (or the mixer's master Volume) keeps working as the project grows.
+
+### One-time mixer setup
+
+In `Assets/Shared/Sound/MixerMain.mixer`:
+
+1. Add two child groups under your **Music** group: **`MusicA`** and **`MusicB`**.
+2. For each group, right-click its **Volume** slider → **Expose 'Volume (of MusicX)' to script**.
+3. In the mixer's **Exposed Parameters** list, rename the two entries to **`MusicVolumeA`** and **`MusicVolumeB`** (these names must match the fields on `MusicController`).
+
+### Scene setup
+
+1. Add a child GameObject `_Audio/MusicController` with the `MusicController` component.
+2. Add two `AudioSource` children. On each, set **Output** to the matching mixer group (`MusicA` / `MusicB`) and untick **Play On Awake**.
+3. Wire the Inspector:
+
+| Field | What to assign |
+|---|---|
+| **Mixer** | `MixerMain.mixer` |
+| **Volume Param A / B** | `MusicVolumeA` / `MusicVolumeB` (must match the exposed parameter names) |
+| **Source A / B** | The two `AudioSource` children, in order matching the mixer groups |
+| **Comic Manager** | The `ComicManager` in the scene — required for per-panel music swaps |
+
+### Creating a track
+
+In the Project window: **right-click → Create → Comic → Music Track**. Save under `Assets/Data/Music/`.
+
+| Field | What it does |
+|---|---|
+| **Clip** | The audio clip. Leave empty to make this SO represent intentional silence (assign it to a panel to fade music out). |
+| **Target Volume Db** | Volume in decibels when fully faded in. 0 dB is unattenuated, -80 dB is silent. Use this to balance loud and quiet tracks. |
+| **Loop** | Whether the clip loops. True for underscore music, false for stingers. |
+| **Default Fade In Seconds** | Used when transitioning *to* this track. |
+| **Default Fade Out Seconds** | Used when transitioning *away from* this track. |
+
+### How a panel's music is chosen
+
+When the displayed panel changes, `MusicController` reads `panel.Music` (the `Music` field on the panel's `PanelDataSO`):
+
+| `Music` field | Behaviour |
+|---|---|
+| Empty (null) | No change — current track keeps playing |
+| Track with a clip | Crossfades to the new track |
+| Track with **no clip** | Fades current music to silence (canonical: a `Silence.asset` MusicTrackSO with Clip empty) |
+
+This event also fires for back / forward history navigation, so music follows the displayed panel in both directions. Replay does not fire it — replay does not change which panel is displayed.
+
+> **Default is "no change", not "stop".** Most panels should leave **Music** empty so an underscore track keeps playing through the whole sequence. Only assign **Music** on panels that actually need a swap (e.g. Panel 1 to fade title music out and story music in, or a finale panel to drop into silence).
+
+---
+
+## Data Assets Location
+
 ```
 Assets/Data/
   PanelData/           ← one PanelDataSO per panel (Panel_01_, Panel_02_…)
   PlayerChoices/       ← single shared PlayerChoices.asset used by all scenes
+  Music/               ← one MusicTrackSO per cue
+                          Title.asset, Story_Loop0.asset, etc.
+                          Silence.asset (Clip empty) — canonical "fade to silence" cue
 ```

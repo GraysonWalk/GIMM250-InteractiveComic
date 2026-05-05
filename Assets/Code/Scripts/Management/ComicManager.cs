@@ -45,6 +45,14 @@ public class ComicManager : MonoBehaviour
     /// </summary>
     public UnityEvent<bool, bool> OnNavigationAvailabilityChanged { get; } = new();
 
+    /// <summary>
+    ///     Fired whenever the displayed panel changes — forward (SwitchToPanel), back (RetreatComic),
+    ///     and forward-through-history (RedoPanel). MusicController subscribes to this to crossfade
+    ///     to the new panel's MusicTrackSO. Consumers must not assume the panel is the story-front
+    ///     panel — it may be a historical panel during back/forward navigation.
+    /// </summary>
+    public UnityEvent<IComicPanel> OnDisplayedPanelChanged { get; } = new();
+
     #endregion
 
     #region Methods
@@ -110,6 +118,7 @@ public class ComicManager : MonoBehaviour
         if (cmd is not SwitchCameraCommand switchCmd) return;
         _displayedPanel = switchCmd.PanelAfterUndo;
         OnReplayAvailabilityChanged.Invoke(true);
+        OnDisplayedPanelChanged.Invoke(_displayedPanel);
         BroadcastNavigationAvailability();
     }
 
@@ -124,6 +133,7 @@ public class ComicManager : MonoBehaviour
         if (cmd is not SwitchCameraCommand switchCmd) return;
         _displayedPanel = switchCmd.PanelAfterExecute;
         OnReplayAvailabilityChanged.Invoke(true);
+        OnDisplayedPanelChanged.Invoke(_displayedPanel);
         BroadcastNavigationAvailability();
 
         // If there's nothing left to redo we're back at the story front.
@@ -231,6 +241,7 @@ public class ComicManager : MonoBehaviour
         _commandHistory.Execute(new SwitchCameraCommand(prev, next, brain, blend));
         _displayedPanel = next;
         OnReplayAvailabilityChanged.Invoke(isRevisit);
+        OnDisplayedPanelChanged.Invoke(_displayedPanel);
         BroadcastNavigationAvailability();
     }
 
