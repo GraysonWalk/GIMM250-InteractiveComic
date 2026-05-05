@@ -29,8 +29,9 @@ public class ComicManager : MonoBehaviour
     ///     Fires after intro animation and after each blocking step completes.
     ///     NavigationController subscribes to unblock advance button input.
     ///     NavigationPresenter subscribes to show the "press spacebar" hint.
+    ///     The bool argument is true when the hint should be shown — false for click-driven steps.
     /// </summary>
-    public UnityEvent OnCurrentPanelReadyForInput { get; } = new();
+    public UnityEvent<bool> OnCurrentPanelReadyForInput { get; } = new();
 
     /// <summary>
     ///     Fired whenever the displayed panel changes.
@@ -44,6 +45,14 @@ public class ComicManager : MonoBehaviour
     ///     NavigationPresenter uses this to enable/disable arrows and derive advance availability.
     /// </summary>
     public UnityEvent<bool, bool> OnNavigationAvailabilityChanged { get; } = new();
+
+    /// <summary>
+    ///     Fired whenever the displayed panel changes — forward (SwitchToPanel), back (RetreatComic),
+    ///     and forward-through-history (RedoPanel). MusicController subscribes to this to crossfade
+    ///     to the new panel's MusicTrackSO. Consumers must not assume the panel is the story-front
+    ///     panel — it may be a historical panel during back/forward navigation.
+    /// </summary>
+    public UnityEvent<IComicPanel> OnDisplayedPanelChanged { get; } = new();
 
     #endregion
 
@@ -61,9 +70,16 @@ public class ComicManager : MonoBehaviour
 
         if (_comicPanels.Length == 0)
             Debug.LogError("[ComicManager] No ComicPanel components found in the scene.", this);
+    }
 
-        // Subscribe to and show the first eligible panel — the only manual subscription needed.
-        // All subsequent panels are subscribed to via SwitchToPanel() as the comic advances.
+    /// <summary>
+    ///     Starts the comic from the first eligible panel.
+    ///     Called by TitleScreenController when the player presses the start button.
+    ///     Panel 1's IncomingBlend (set on its PanelDataSO) controls the camera transition
+    ///     from the title camera — set it to EaseInOut for a cinematic tilt-down, or Cut for an instant jump.
+    /// </summary>
+    public void StartComic()
+    {
         IComicPanel first = PanelSelector.NextPanel(_comicPanels, null, _currentLoopCount);
         if (first != null)
             SwitchToPanel(first);
@@ -103,6 +119,7 @@ public class ComicManager : MonoBehaviour
         if (cmd is not SwitchCameraCommand switchCmd) return;
         _displayedPanel = switchCmd.PanelAfterUndo;
         OnReplayAvailabilityChanged.Invoke(true);
+        OnDisplayedPanelChanged.Invoke(_displayedPanel);
         BroadcastNavigationAvailability();
     }
 
@@ -117,12 +134,14 @@ public class ComicManager : MonoBehaviour
         if (cmd is not SwitchCameraCommand switchCmd) return;
         _displayedPanel = switchCmd.PanelAfterExecute;
         OnReplayAvailabilityChanged.Invoke(true);
+        OnDisplayedPanelChanged.Invoke(_displayedPanel);
         BroadcastNavigationAvailability();
 
         // If there's nothing left to redo we're back at the story front.
         // ShowInstant() never fires OnReadyForInput, so fire it here to show the advance hint.
+        // All steps are done (panel is in its final state) — hint always shows to advance to next panel.
         if (!_commandHistory.CanRedo)
-            OnCurrentPanelReadyForInput.Invoke();
+            OnCurrentPanelReadyForInput.Invoke(true);
     }
 
     /// <summary>
@@ -165,7 +184,7 @@ public class ComicManager : MonoBehaviour
 
         OnReplayAvailabilityChanged.Invoke(true); // Replay button available again.
         if (wasHistorical)
-            OnCurrentPanelReadyForInput.Invoke(); // Unblock advance button without showing hint.
+            OnCurrentPanelReadyForInput.Invoke(false); // Unblock advance button; hint suppressed (browsing history).
     }
 
     /// <summary>
@@ -212,11 +231,10 @@ public class ComicManager : MonoBehaviour
         IComicPanel prev = _currentComicPanel;
         RewireCurrentPanel(next);
 
-        // First launch always cuts so the main camera doesn't travel through empty space.
-        // All subsequent transitions use the target panel's configured incoming blend.
-        CinemachineBlendDefinition blend = prev == null
-            ? new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0f)
-            : next.IncomingBlend;
+        // Always use the target panel's configured incoming blend.
+        // On first launch this blends from the title camera's position — set Panel 1's IncomingBlend
+        // to EaseInOut for a cinematic tilt-down, or Cut if no title camera is present.
+        CinemachineBlendDefinition blend = next.IncomingBlend;
 
         // Capture whether this panel was already seen BEFORE Show() runs —
         // Show() sets HasBeenVisited = true on first visit, so we must read it first.
@@ -225,6 +243,7 @@ public class ComicManager : MonoBehaviour
         _commandHistory.Execute(new SwitchCameraCommand(prev, next, brain, blend));
         _displayedPanel = next;
         OnReplayAvailabilityChanged.Invoke(isRevisit);
+        OnDisplayedPanelChanged.Invoke(_displayedPanel);
         BroadcastNavigationAvailability();
     }
 

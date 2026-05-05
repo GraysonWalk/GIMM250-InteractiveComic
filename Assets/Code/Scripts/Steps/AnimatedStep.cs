@@ -9,7 +9,7 @@ using UnityEngine;
 ///     1. Add a child GameObject under ComicPanel; attach this component + an Animator.
 ///     2. Set the Animator Controller's default state to your clip; disable Loop Time.
 ///     3. On the last keyframe add an Animation Event pointing to OnAnimationFinished().
-    ///     4. Optionally: add PanelText or SpriteVariant children and fill in variant content in the Inspector.
+///     4. Optionally: add PanelText or SpriteVariant children and fill in variant content in the Inspector.
 ///     5. Tick "Persists In Final State" if this element should remain visible at the panel's end.
 /// </summary>
 [RequireComponent(typeof(Animator))]
@@ -56,10 +56,10 @@ public sealed class AnimatedStep : StepBase
 
         if (!skip)
         {
-            // First visit (or replay) — populate text and play the animation from the start.
-            PanelText[] texts = GetComponentsInChildren<PanelText>(true);
-            foreach (PanelText text in texts)
-                text.Populate(choices);
+            // First visit (or replay) — populate all variant content and play the animation from the start.
+            IVariantContent[] variants = GetComponentsInChildren<IVariantContent>(true);
+            foreach (IVariantContent variant in variants)
+                variant.Populate(choices);
 
             gameObject.SetActive(true);
             SeekAnimator(0f);

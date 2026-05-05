@@ -5,9 +5,8 @@ using UnityEngine.Events;
 
 /// <summary>
 ///     A single panel in the comic sequence. Steps through IPanelStep children in hierarchy order.
-///     AnimatedSteps are IPanelStep — ComicPanel doesn't distinguish between visual and minigame steps.
-///     All steps are blocking: Advance() waits for each step's OnAnimationFinished event before
-///     accepting the next input.
+///     Blocking steps (AnimatedStep, FocusPoint, MiniGame) lock advance input until they complete.
+///     Non-blocking steps (frozen or hidden on revisit) auto-chain in a single burst on one press.
 /// </summary>
 [RequireComponent(typeof(Animator))]
 public class ComicPanel : MonoBehaviour, IComicPanel
@@ -33,13 +32,16 @@ public class ComicPanel : MonoBehaviour, IComicPanel
     ///     Fired whenever the panel is ready for the next advance button press:
     ///     — after the intro animation finishes (polled by coroutine)
     ///     — after a blocking step completes
+    ///     The bool argument is true when the advance hint should be shown; false is used by
+    ///     ComicManager for specific cases (e.g. historical replay completion) where hinting is wrong.
     /// </summary>
-    public UnityEvent OnReadyForInput { get; } = new();
+    public UnityEvent<bool> OnReadyForInput { get; } = new();
 
     public LoopCount FirstLoop => data.FirstLoop;
     public LoopCount LastLoop => data.LastLoop;
     public int Rank => data.Rank;
     public CinemachineBlendDefinition IncomingBlend => data.IncomingBlend;
+    public MusicTrackSO Music => data.Music;
     public bool HasBeenVisited { get; private set; }
 
     #endregion
@@ -222,7 +224,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
                 // Last step was non-blocking. Wait for an explicit advance press if required,
                 // otherwise complete the panel immediately.
                 if (data.RequireAdvanceToComplete)
-                    OnReadyForInput.Invoke();
+                    OnReadyForInput.Invoke(true);
                 else
                     OnPanelComplete.Invoke();
                 return;
@@ -242,13 +244,13 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         {
             // Last step was blocking. Same choice as above — wait for explicit advance or complete now.
             if (data.RequireAdvanceToComplete)
-                OnReadyForInput.Invoke();
+                OnReadyForInput.Invoke(true);
             else
                 OnPanelComplete.Invoke();
         }
         else
         {
-            OnReadyForInput.Invoke();
+            OnReadyForInput.Invoke(true);
         }
     }
 
@@ -278,7 +280,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         // so HasBeenVisited stays false and the animation replays on next visit.
         HasBeenVisited = true;
         _isBlocked = false;
-        OnReadyForInput.Invoke();
+        OnReadyForInput.Invoke(true);
     }
 
     /// <summary>
@@ -292,7 +294,7 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         if (cam.enabled)
         {
             _isBlocked = false;
-            OnReadyForInput.Invoke();
+            OnReadyForInput.Invoke(true);
         }
     }
 
