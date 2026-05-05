@@ -29,8 +29,9 @@ public class ComicManager : MonoBehaviour
     ///     Fires after intro animation and after each blocking step completes.
     ///     NavigationController subscribes to unblock advance button input.
     ///     NavigationPresenter subscribes to show the "press spacebar" hint.
+    ///     The bool argument is true when the hint should be shown — false for click-driven steps.
     /// </summary>
-    public UnityEvent OnCurrentPanelReadyForInput { get; } = new();
+    public UnityEvent<bool> OnCurrentPanelReadyForInput { get; } = new();
 
     /// <summary>
     ///     Fired whenever the displayed panel changes.
@@ -138,8 +139,9 @@ public class ComicManager : MonoBehaviour
 
         // If there's nothing left to redo we're back at the story front.
         // ShowInstant() never fires OnReadyForInput, so fire it here to show the advance hint.
+        // All steps are done (panel is in its final state) — hint always shows to advance to next panel.
         if (!_commandHistory.CanRedo)
-            OnCurrentPanelReadyForInput.Invoke();
+            OnCurrentPanelReadyForInput.Invoke(true);
     }
 
     /// <summary>
@@ -182,7 +184,7 @@ public class ComicManager : MonoBehaviour
 
         OnReplayAvailabilityChanged.Invoke(true); // Replay button available again.
         if (wasHistorical)
-            OnCurrentPanelReadyForInput.Invoke(); // Unblock advance button without showing hint.
+            OnCurrentPanelReadyForInput.Invoke(false); // Unblock advance button; hint suppressed (browsing history).
     }
 
     /// <summary>

@@ -32,6 +32,7 @@ public abstract class StepBase : MonoBehaviour, IPanelStep
     protected bool HasBeenActivated => _hasBeenActivated;
 
     public bool IsBlocking => !_hasBeenActivated || replayOnRevisit;
+    public virtual bool ShowAdvanceHint => true;
     public abstract bool ShowInFinalState { get; }
     public UnityEvent OnStepComplete { get; } = new();
 

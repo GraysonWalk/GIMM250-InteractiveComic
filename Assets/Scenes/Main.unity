@@ -2186,8 +2186,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Press <size=250%>\u2423</size> to advance"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 0}
-  m_sharedMaterial: {fileID: 0}
+  m_fontAsset: {fileID: 11400000, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+  m_sharedMaterial: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2211,7 +2211,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26.15
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2738,6 +2738,8 @@ MonoBehaviour:
   titleCamera: {fileID: 501838386}
   titleUI: {fileID: 843556270}
   startButton: {fileID: 1795232913}
+  titleMusic: {fileID: 0}
+  musicController: {fileID: 0}
 --- !u!1 &1633392539
 GameObject:
   m_ObjectHideFlags: 0
@@ -3239,7 +3241,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2020872988878742645, guid: 9d3c6870a26bb4280a652a91c2e3d468, type: 3}
       propertyPath: m_fontSize
-      value: 70.05
+      value: 68.85
       objectReference: {fileID: 0}
     - target: {fileID: 2020872988878742645, guid: 9d3c6870a26bb4280a652a91c2e3d468, type: 3}
       propertyPath: m_fontAsset
@@ -3251,7 +3253,7 @@ PrefabInstance:
       objectReference: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
     - target: {fileID: 2020872988878742645, guid: 9d3c6870a26bb4280a652a91c2e3d468, type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 16777215
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 2020872988878742645, guid: 9d3c6870a26bb4280a652a91c2e3d468, type: 3}
       propertyPath: m_hasFontAssetChanged
@@ -3903,7 +3905,7 @@ PrefabInstance:
       objectReference: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
     - target: {fileID: 3609260589653341210, guid: 54cba9a02c59d4b41944c61d8ff6ed07, type: 3}
       propertyPath: m_fontSize
-      value: 1.85
+      value: 2.15
       objectReference: {fileID: 0}
     - target: {fileID: 3609260589653341210, guid: 54cba9a02c59d4b41944c61d8ff6ed07, type: 3}
       propertyPath: m_fontAsset
@@ -3928,6 +3930,10 @@ PrefabInstance:
     - target: {fileID: 4748727248064258424, guid: 54cba9a02c59d4b41944c61d8ff6ed07, type: 3}
       propertyPath: m_Name
       value: Panel_15_EnsignReturns
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796582719734683879, guid: 54cba9a02c59d4b41944c61d8ff6ed07, type: 3}
+      propertyPath: m_fontSize
+      value: 1.95
       objectReference: {fileID: 0}
     - target: {fileID: 4796582719734683879, guid: 54cba9a02c59d4b41944c61d8ff6ed07, type: 3}
       propertyPath: m_fontAsset
@@ -4052,7 +4058,7 @@ PrefabInstance:
       objectReference: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
     - target: {fileID: 908234614026575606, guid: 0cb8f0a66e37744cc9141e5ddbed8a66, type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 0
+      value: 4278190080
       objectReference: {fileID: 0}
     - target: {fileID: 908234614026575606, guid: 0cb8f0a66e37744cc9141e5ddbed8a66, type: 3}
       propertyPath: m_hasFontAssetChanged

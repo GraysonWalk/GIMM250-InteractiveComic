@@ -1,8 +1,7 @@
-using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-///     Abstract base class for all minigames. Place as a child GameObject of a ComicPanel.
+///     Base class for all minigames. Place as a child GameObject of a ComicPanel.
 ///     Implements IPanelStep (via StepBase) so ComicPanel.Advance() activates it like any other step.
 ///     Implements IMiniGame for the game logic contract.
 ///     Designer workflow:
@@ -20,11 +19,13 @@ public class MiniGame : StepBase, IMiniGame
 
     public UnityEvent OnGameComplete { get; } = new();
     public UnityEvent OnGameFailed   { get; } = new();
-    
-    [SerializeField] GameObject game;
 
     // Minigames are interactive — they never persist as static display elements in the final state.
     public override bool ShowInFinalState => false;
+
+    // Minigame interaction is game-driven (clicks, drags, etc.); the spacebar advance hint should
+    // not appear while this step is queued — there is no "press spacebar" action for the player.
+    public override bool ShowAdvanceHint => false;
 
     #endregion
 
@@ -39,13 +40,8 @@ public class MiniGame : StepBase, IMiniGame
         StartGame();
     }
 
-    /// <summary>Override to set up game state, spawn objects, start timers, etc.</summary>
-    public void StartGame()
-    {
-    }
-
-
-
+    /// <summary>Override in subclasses to set up game state, spawn objects, start timers, etc.</summary>
+    public virtual void StartGame() { }
 
     /// <summary>Called internally when the game ends. Fires OnStepComplete to unblock the panel.</summary>
     public virtual void EndGame()
