@@ -12,11 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7032d6e9d6cb4589881e7a539d167d77, type: 3}
   m_Name: Panel_08_BuildingAHomeB
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
-  firstLoop: 0
-  hasLeadershipVariant: 0
-  hasPhilosophyVariant: 0
-  hasScienceVariant: 0
-  rank: 0
+  firstLoop: 4
+  lastLoop: 4
+  rank: 80
   requireAdvanceToComplete: 1
   replayAnimationOnRevisit: 1
   incomingBlend:
@@ -29,3 +27,4 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   introCrossFadeDuration: 0.1
+  music: {fileID: 0}
