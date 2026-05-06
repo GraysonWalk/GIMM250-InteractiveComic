@@ -19,7 +19,7 @@ MonoBehaviour:
   replayAnimationOnRevisit: 0
   incomingBlend:
     Style: 1
-    Time: 3
+    Time: 6
     CustomCurve:
       serializedVersion: 2
       m_Curve: []
