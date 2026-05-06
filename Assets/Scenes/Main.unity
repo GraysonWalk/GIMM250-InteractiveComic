@@ -1097,7 +1097,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 7.05, y: 1, z: 1}
-  m_Center: {x: -5.43, y: 0.24, z: -0.83}
+  m_Center: {x: -5.43, y: 0.24, z: 0}
 --- !u!4 &301573181
 Transform:
   m_ObjectHideFlags: 0
@@ -1401,8 +1401,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.31263462, y: 0.63423944, z: 0.31263462, w: 0.63423944}
-  m_LocalPosition: {x: -152.44385, y: 113.04057, z: -141.04613}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 658.67, y: 34.59, z: -765.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7249,13 +7249,45 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 849617725916429944, guid: 7d74e94f1929ef5408fe2a9128a51a4a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2139242064}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4348809414157753881, guid: 7d74e94f1929ef5408fe2a9128a51a4a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1932469356}
   m_SourcePrefab: {fileID: 100100000, guid: 7d74e94f1929ef5408fe2a9128a51a4a, type: 3}
 --- !u!4 &1932469353 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 849617725916429944, guid: 7d74e94f1929ef5408fe2a9128a51a4a, type: 3}
   m_PrefabInstance: {fileID: 1932469352}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1932469354 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 88078165798521818, guid: 7d74e94f1929ef5408fe2a9128a51a4a, type: 3}
+  m_PrefabInstance: {fileID: 1932469352}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
+--- !u!1 &1932469355 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4348809414157753881, guid: 7d74e94f1929ef5408fe2a9128a51a4a, type: 3}
+  m_PrefabInstance: {fileID: 1932469352}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1932469356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932469355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 620733140f42f4b758dae37dd72a2345, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PanelViewLock
+  cam: {fileID: 1932469354}
 --- !u!1 &1967232359
 GameObject:
   m_ObjectHideFlags: 0
@@ -8084,7 +8116,7 @@ Transform:
   m_GameObject: {fileID: 2139242063}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.26, y: -3.41, z: -1.04}
+  m_LocalPosition: {x: 4.42, y: -2.4, z: -3.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
