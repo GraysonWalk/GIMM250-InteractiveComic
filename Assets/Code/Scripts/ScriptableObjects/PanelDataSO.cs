@@ -18,6 +18,10 @@ public class PanelDataSO : ScriptableObject
     [SerializeField] private int rank;
 
     [Header("Completion")]
+    [Tooltip("If ticked, the panel advances to its first step automatically when the intro animation " +
+             "finishes — no button press needed. Use for purely cinematic panels with no interaction.")]
+    [SerializeField] private bool autoAdvanceAfterIntro;
+
     [Tooltip("If ticked, the player must press the advance button after the last step before moving " +
              "to the next panel. Untick to advance automatically when the last step finishes.")]
     [SerializeField] private bool requireAdvanceToComplete = true;
@@ -45,6 +49,7 @@ public class PanelDataSO : ScriptableObject
     public int Rank => rank;
     public LoopCount FirstLoop => firstLoop;
     public LoopCount LastLoop => lastLoop;
+    public bool AutoAdvanceAfterIntro => autoAdvanceAfterIntro;
     public bool RequireAdvanceToComplete => requireAdvanceToComplete;
     public bool ReplayAnimationOnRevisit => replayAnimationOnRevisit;
     public CinemachineBlendDefinition IncomingBlend => incomingBlend;

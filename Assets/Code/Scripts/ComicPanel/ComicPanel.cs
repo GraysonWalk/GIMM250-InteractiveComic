@@ -280,7 +280,11 @@ public class ComicPanel : MonoBehaviour, IComicPanel
         // so HasBeenVisited stays false and the animation replays on next visit.
         HasBeenVisited = true;
         _isBlocked = false;
-        OnReadyForInput.Invoke(true);
+
+        if (data.AutoAdvanceAfterIntro)
+            Advance(); // Skip the button press — go straight to the first step (or OnPanelComplete).
+        else
+            OnReadyForInput.Invoke(true);
     }
 
     /// <summary>

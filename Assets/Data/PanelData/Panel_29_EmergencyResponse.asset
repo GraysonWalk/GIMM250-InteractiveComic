@@ -15,6 +15,7 @@ MonoBehaviour:
   firstLoop: 1
   lastLoop: 4
   rank: 290
+  autoAdvanceAfterIntro: 1
   requireAdvanceToComplete: 1
   replayAnimationOnRevisit: 1
   incomingBlend:
