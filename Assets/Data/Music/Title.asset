@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 566deaf15f83549d6a14a3e2cf75cd8c, type: 3}
   m_Name: Title
   m_EditorClassIdentifier: Assembly-CSharp::MusicTrackSO
-  clip: {fileID: 0}
+  clip: {fileID: 8300000, guid: 63fac7784040a4409b0ec833eede1fb0, type: 3}
   targetVolumeDb: 0
   loop: 1
-  defaultFadeInSeconds: 1
-  defaultFadeOutSeconds: 1
+  defaultFadeInSeconds: 6
+  defaultFadeOutSeconds: 6
