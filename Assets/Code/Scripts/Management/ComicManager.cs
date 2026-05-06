@@ -282,5 +282,11 @@ public class ComicManager : MonoBehaviour
         OnNavigationAvailabilityChanged.Invoke(_commandHistory.CanUndo, _commandHistory.CanRedo);
     }
 
+    //Loop Count Getter Function
+    public LoopCount GetLoopCount()
+    {
+        return _currentLoopCount;
+    }
+
     #endregion
 }

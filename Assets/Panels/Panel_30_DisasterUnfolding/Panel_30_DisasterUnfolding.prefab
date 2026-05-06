@@ -206,7 +206,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 15854927
+    rgba: 4294045007
   m_fontColor: {r: 0.31149864, g: 0.9275987, b: 0.9433962, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1610,13 +1610,66 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8146915638931047242, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4914585948863508700}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5089007462190654251, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 863662518004220270}
   m_SourcePrefab: {fileID: 100100000, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
 --- !u!4 &162941007568456839 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8146915638931047242, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
   m_PrefabInstance: {fileID: 8308377597167341517}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3878303195614063846 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5089007462190654251, guid: 5c96fbae646d241928a708c3402269e0, type: 3}
+  m_PrefabInstance: {fileID: 8308377597167341517}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &863662518004220270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3878303195614063846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8b64f401a22b4c40b2cfada8c05080c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EndPanel
+  narratorBox: {fileID: 6242224820422078204}
+  loopText:
+  - I still don't understand.. We need more
+  - There's still things we're missing
+  - Almost everything. One more time through
+  - Now you can make the decision
+  finalChoice:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2996139875225277430}
+        m_TargetAssemblyTypeName: UnityEngine.BoxCollider, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 3269274270010240437}
+        m_TargetAssemblyTypeName: UnityEngine.BoxCollider, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!95 &4636553423301549652 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 3680867659152069017, guid: 5c96fbae646d241928a708c3402269e0, type: 3}

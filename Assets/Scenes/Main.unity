@@ -500,6 +500,34 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
+    - target: {fileID: 863662518004220270, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
+      propertyPath: comicController
+      value: 
+      objectReference: {fileID: 1594658155}
+    - target: {fileID: 863662518004220270, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
+      propertyPath: loopText.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 863662518004220270, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
+      propertyPath: 'loopText.Array.data[0]'
+      value: How could this happen?
+      objectReference: {fileID: 0}
+    - target: {fileID: 863662518004220270, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
+      propertyPath: 'loopText.Array.data[1]'
+      value: I still don't understand.. We need more
+      objectReference: {fileID: 0}
+    - target: {fileID: 863662518004220270, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
+      propertyPath: 'loopText.Array.data[2]'
+      value: There's still things we're missing
+      objectReference: {fileID: 0}
+    - target: {fileID: 863662518004220270, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
+      propertyPath: 'loopText.Array.data[3]'
+      value: Almost everything. One more time through
+      objectReference: {fileID: 0}
+    - target: {fileID: 863662518004220270, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
+      propertyPath: 'loopText.Array.data[4]'
+      value: Now you can make the decision
+      objectReference: {fileID: 0}
     - target: {fileID: 2986455478079115109, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
       propertyPath: m_fontSize
       value: 2.55
@@ -576,27 +604,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 162941007568456839, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
   m_PrefabInstance: {fileID: 51603663}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &51603665 stripped
-BoxCollider:
-  m_CorrespondingSourceObject: {fileID: 3269274270010240437, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
-  m_PrefabInstance: {fileID: 51603663}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &51603666 stripped
-BoxCollider:
-  m_CorrespondingSourceObject: {fileID: 2996139875225277430, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
-  m_PrefabInstance: {fileID: 51603663}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &51603667 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6242224820422078204, guid: 5dfb35f64201449448a80b0679709db5, type: 3}
-  m_PrefabInstance: {fileID: 51603663}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshPro
 --- !u!224 &59118994 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8911290758205776710, guid: 9d3c6870a26bb4280a652a91c2e3d468, type: 3}
@@ -1600,8 +1607,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -79.80618, y: 18.300001, z: -755.3}
+  m_LocalRotation: {x: -0.27748236, y: 0, z: 0, w: 0.96073073}
+  m_LocalPosition: {x: 75.79512, y: 194.84233, z: -1656.7081}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3448,12 +3455,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3670800740659175088, guid: ac77c77d973d5374b9d33b55ebbae80a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 4094122370948598581, guid: ac77c77d973d5374b9d33b55ebbae80a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8427346491427516330, guid: ac77c77d973d5374b9d33b55ebbae80a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: ac77c77d973d5374b9d33b55ebbae80a, type: 3}
@@ -6157,7 +6158,6 @@ GameObject:
   - component: {fileID: 1594658159}
   - component: {fileID: 1594658160}
   - component: {fileID: 1594658161}
-  - component: {fileID: 1594658162}
   m_Layer: 0
   m_Name: ComicManager
   m_TagString: Untagged
@@ -6238,51 +6238,6 @@ MonoBehaviour:
   startButton: {fileID: 1795232913}
   titleMusic: {fileID: 0}
   musicController: {fileID: 0}
---- !u!114 &1594658162
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1594658155}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8b64f401a22b4c40b2cfada8c05080c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EndPanel
-  narratorBox: {fileID: 51603667}
-  loopText:
-  - I still don't understand.. We need more
-  - There's still things we're missing
-  - Almost everything. One more time through
-  - Now you can make the decision
-  finalChoice:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 51603665}
-        m_TargetAssemblyTypeName: UnityEngine.BoxCollider, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 51603666}
-        m_TargetAssemblyTypeName: UnityEngine.BoxCollider, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
 --- !u!1 &1633392539
 GameObject:
   m_ObjectHideFlags: 0
