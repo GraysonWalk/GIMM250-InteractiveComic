@@ -27,4 +27,4 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   introCrossFadeDuration: 0.1
-  music: {fileID: 0}
+  music: {fileID: 11400000, guid: 3b795557321c147bdae9175faf006100, type: 2}
