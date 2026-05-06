@@ -197,7 +197,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: How did could this happen?
+  m_text: How could this happen?
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
   m_sharedMaterial: {fileID: 7797886483586254729, guid: 376072a1142b342ffbb0f032c1e01eda, type: 2}
@@ -1638,6 +1638,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EndPanel
   narratorBox: {fileID: 6242224820422078204}
+  comicController: {fileID: 0}
   loopText:
   - I still don't understand.. We need more
   - There's still things we're missing
