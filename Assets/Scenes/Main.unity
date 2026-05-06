@@ -2672,6 +2672,67 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &569644371
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 569644373}
+  - component: {fileID: 569644372}
+  m_Layer: 0
+  m_Name: BlackHole
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &569644372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 569644371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7030161fac5f065439d1cc1d18864276, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlackHole
+  _RenderBlackHole: 0
+  _HasAccretionDisk: 1
+  _AccretionDiskSpeed: 1
+  _EventHorizon: 1
+  _AccretionDiskDetail: 100
+  _AccretionDiskSize: 50
+  _AccretionDiskGap: 30
+  _AccretionDiskColor: {r: 1, g: 0.60112643, b: 0, a: 1}
+  _EnableDopplerEffect: 0
+  _AccretionDiskPower: 1
+  _Gravity: 1e+10
+  _MaxRotation: 10
+  _MarchingSteps: 20
+  _LensingResolution: 1024
+  _BlackHoleShader: {fileID: 4800000, guid: edfca5696dec1814eb9e32265de578ff, type: 3}
+  _Icosphere: {fileID: 289301614986012343, guid: 4fe807e94b8fca2419d3701519ce46cb, type: 3}
+  _AccretionDiskNoise: {fileID: 2800000, guid: c7a07b737c0c7b24180a391fb79558ed, type: 3}
+--- !u!4 &569644373
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 569644371}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0.42261827, w: 0.9063079}
+  m_LocalPosition: {x: 1530, y: 354, z: -224.5825}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 50}
 --- !u!4 &573814560 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6586011320523141623, guid: 55e1586fa99664c7db943de7aee6f368, type: 3}
@@ -4012,7 +4073,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1640491568530793417, guid: 68b31514dd2e55a4bb872590844ba733, type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 16777215
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 1653968265523780929, guid: 68b31514dd2e55a4bb872590844ba733, type: 3}
       propertyPath: optionAVolume
@@ -4112,7 +4173,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7922622518698134920, guid: 68b31514dd2e55a4bb872590844ba733, type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 16777215
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 8253763844073979854, guid: 68b31514dd2e55a4bb872590844ba733, type: 3}
       propertyPath: m_Name
@@ -4128,7 +4189,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8297927666936985679, guid: 68b31514dd2e55a4bb872590844ba733, type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 16777215
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 8564134981917912835, guid: 68b31514dd2e55a4bb872590844ba733, type: 3}
       propertyPath: m_Layer
@@ -9500,3 +9561,4 @@ SceneRoots:
   - {fileID: 1486675793}
   - {fileID: 843556272}
   - {fileID: 167271393}
+  - {fileID: 569644373}
