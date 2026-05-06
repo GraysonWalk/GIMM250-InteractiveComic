@@ -121,6 +121,11 @@ public sealed class VideoStep : StepBase
     /// </summary>
     public override void Deactivate()
     {
+        // _video is assigned in Awake(). ComicPanel.Awake() calls Deactivate() on all steps to
+        // guarantee they start hidden, but Awake() order between GameObjects is not guaranteed —
+        // VideoStep.Awake() may not have run yet. Guard here so the null ref doesn't surface.
+        if (_video == null) { base.Deactivate(); return; }
+
         UnsubscribeLoopEvent();
         StopSafetyCoroutine();
         _video.Pause();     // Pause (not Stop) — preserves last frame in RenderTexture.
