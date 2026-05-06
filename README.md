@@ -212,6 +212,7 @@ On loop revisit or after the Replay button, `FocusPoint` shows the already-chose
 | `PanelText` | — (not a step) | Yes — focus-variant | Dialogue lines, captions, prose; child of `AnimatedStep`, shown/hidden by its Animator |
 | `SpriteVariant` | — (not a step) | No — swaps sprites | Attach to any `SpriteRenderer` child of an `AnimatedStep`; swaps sprite based on player focus choice |
 | `FocusPoint` | until option clicked | No | Presents two `Clickable` options; records choice to `PlayerChoicesSO`; optionally enables a per-option scene `Volume` at decision time that stays on for the rest of the program |
+| `VideoStep` | until video ends (`loopPointReached`) | No | Plays a `VideoPlayer` clip; blocks until the clip finishes. **Loop must be disabled** on the VideoPlayer. Pauses on the last frame so frozen revisits show the end frame without re-seeking. Set *Replay On Revisit* to replay every loop; untick to freeze on the last frame. |
 | `MiniGame` subclass | until `Complete()` or `Fail()` | No | Interactive puzzles embedded in panels. `MiniGame` itself is abstract — subclass it for each puzzle (e.g. `SignalGame`). |
 
 ---
