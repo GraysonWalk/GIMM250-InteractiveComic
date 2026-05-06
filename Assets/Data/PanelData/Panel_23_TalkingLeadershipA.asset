@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7032d6e9d6cb4589881e7a539d167d77, type: 3}
   m_Name: Panel_23_TalkingLeadershipA
   m_EditorClassIdentifier: Assembly-CSharp::PanelDataSO
-  firstLoop: 2
+  firstLoop: 3
   lastLoop: 3
   rank: 230
   requireAdvanceToComplete: 0
@@ -27,3 +27,4 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   introCrossFadeDuration: 0.1
+  music: {fileID: 0}
