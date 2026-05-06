@@ -630,7 +630,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3167624073257689924, guid: d7cfd0fe241e257489c3258b2a35978b, type: 3}
       propertyPath: m_Name
-      value: Panel_5_FixingTheShipA
+      value: Panel_05_FixingTheShipA
       objectReference: {fileID: 0}
     - target: {fileID: 3167624073257689924, guid: d7cfd0fe241e257489c3258b2a35978b, type: 3}
       propertyPath: m_Layer
@@ -5031,7 +5031,7 @@ GameObject:
   - component: {fileID: 1745115318}
   - component: {fileID: 1745115317}
   m_Layer: 7
-  m_Name: Plane
+  m_Name: VideoShipFix
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5179,7 +5179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VideoStep
   replayOnRevisit: 1
   hideOnRevisit: 0
-  loopsInBackground: 0
+  loopsInBackground: 1
   persistsInFinalState: 0
 --- !u!1 &1751361162
 GameObject:
